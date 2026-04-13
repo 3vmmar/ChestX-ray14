@@ -1,0 +1,47 @@
+# Byte-compiled / optimized
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Model checkpoints and weights
+*.pt
+*.pth
+*.h5
+*.ckpt
+*.safetensors
+
+# Large data files (images not tracked)
+data/raw/
+data/images/
+*.tar.gz
+*.zip
+
+# Outputs that are too large for git
+outputs/**/*.npy
+outputs/**/*.pkl
+outputs/**/*.csv
+!outputs/**/.gitkeep
+
+# Logs
+*.log
+wandb/
+runs/
+
