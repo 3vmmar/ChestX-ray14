@@ -1,4 +1,4 @@
-# Team505 — Phase 2: Pneumonia Detection from ChestX-ray14
+# Team505 — Project: Pneumonia Detection from ChestX-ray14
 
 ## DSAI 305 — Healthcare XAI Project
 
