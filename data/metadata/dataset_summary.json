@@ -1,0 +1,36 @@
+{
+    "strategy": "NIH-only, capped per class, patient-wise 70/15/15",
+    "cap_per_class": 1431,
+    "classes_kept": [
+        "Atelectasis",
+        "Cardiomegaly",
+        "Consolidation",
+        "Edema",
+        "Effusion",
+        "Emphysema",
+        "Infiltration",
+        "Mass",
+        "No Finding",
+        "Nodule",
+        "Pneumonia",
+        "Pneumothorax"
+    ],
+    "classes_dropped": [
+        "Fibrosis",
+        "Hernia",
+        "Pleural_Thickening"
+    ],
+    "train_total": 11943,
+    "train_pos": 1004,
+    "train_neg": 10939,
+    "train_pos_rate": 0.0841,
+    "val_total": 2611,
+    "val_pos": 186,
+    "val_neg": 2425,
+    "val_pos_rate": 0.0712,
+    "test_total": 2618,
+    "test_pos": 241,
+    "test_neg": 2377,
+    "test_pos_rate": 0.0921,
+    "seed": 42
+}

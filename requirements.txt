@@ -1,14 +1,38 @@
-pandas
-numpy
-matplotlib
-seaborn
-scikit-learn
-torch
-torchvision
-timm
-opencv-python
-pillow
-lime
-shap
-captum
-jupyter
+# ── Core Data & Math ──────────────────────────────────────────────────────────
+pandas>=2.2.0
+numpy>=2.0.0
+
+# ── Visualisation ─────────────────────────────────────────────────────────────
+matplotlib>=3.9.0
+seaborn>=0.13.2
+Pillow>=10.4.0
+
+# ── Machine Learning ──────────────────────────────────────────────────────────
+scikit-learn>=1.5.0
+
+# ── Deep Learning (PyTorch ecosystem) ─────────────────────────────────────────
+# Install the CUDA-enabled wheel via pip; CPU fallback if no GPU
+torch>=2.4.0
+torchvision>=0.19.0
+torchaudio>=2.4.0
+
+# ── Model Hub (ViT, DeiT, Swin Transformer, EfficientNet, etc.) ───────────────
+timm>=1.0.9
+
+# ── Computer Vision ───────────────────────────────────────────────────────────
+opencv-python>=4.10.0.84
+
+# ── Explainability / XAI ──────────────────────────────────────────────────────
+lime>=0.2.0.1
+shap>=0.46.0
+captum>=0.7.0
+
+# ── Jupyter / Notebook ────────────────────────────────────────────────────────
+jupyter>=1.1.1
+notebook>=7.2.0
+ipykernel>=6.29.5
+ipywidgets>=8.1.5
+
+# ── Utilities ─────────────────────────────────────────────────────────────────
+tqdm>=4.66.0
+scipy>=1.14.0

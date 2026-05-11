@@ -1,172 +1,131 @@
-# Team505 — Project: Pneumonia Detection from ChestX-ray14
-
-## DSAI 305 — Healthcare XAI Project
-
-This repository contains the Phase 2 deliverables for our pneumonia detection project using the [NIH ChestX-ray14](https://nihcc.app.box.com/v/ChestXray-NIHCC) dataset. The goal is to build a unified, controlled pipeline with patient-wise data splitting, multi-architecture comparison, and multi-method explainability (XAI).
+# Team505 — Explainable Pneumonia Detection on ChestX-ray14
+## DSAI 305 | Spring 2026 | Phase 3 Final Submission
+**GitHub:** https://github.com/3vmmar/ChestX-ray14
 
 ---
 
-## Phase 2 Deliverable Status
-
-| Deliverable | Status |
-|---|---|
-| Shared preprocessing notebook | ✅ Complete |
-| Shared EDA notebook | ✅ Complete |
-| Individual model notebooks (×4) | ✅ Complete (DEV mode) |
-| Preliminary training results | ✅ Complete |
-| XAI implementation (4 methods) | ✅ Complete |
-| XAI output generation | ✅ Complete (Grad-CAM, LIME, SHAP, IG for all 4 models) |
-| Model comparison | ✅ Complete |
-| XAI comparison | ✅ Complete |
-| Ethics / legal analysis | ✅ Complete |
-| Paper draft structure | ✅ Complete |
-| Presentation outline | ✅ Complete |
-| Progress report (PDF) | ✅ Present |
+## Team Members
+| Member | Student ID | Models |
+|---|---|---|
+| Ammar Ahmed | 202300877 | DenseNet-121, EfficientNet-B3, ResNet-50 |
+| Hosam Nabil | 202202228 | DenseNet-201, VGG-16, MobileNet-V2 |
+| Mohamed Eslam | 202201690 | Xception, InceptionV3, ResNet-101 |
+| Abdelrahman Mostafa | 202202298 | ViT-B/16, Swin-T, DeiT-S |
 
 ---
 
-## Repository Layout
+## Dataset
+- **Source:** NIH ChestX-ray14 (Wang et al., 2017)
+- **Task:** Binary pneumonia detection (Pneumonia vs No Finding)
+- **Total images:** 112,120
+- **Patient-wise split:** enforced — zero leakage
 
+| Split | File | Rows | Positives | Negatives | Ratio |
+|---|---|---|---|---|---|
+| Training | train.csv | 11,943 | 1,004 | 10,939 | ~1:11 |
+| Validation | val.csv | 2,611 | 186 | 2,425 | ~1:13 |
+| Test | test.csv | 2,618 | 241 | 2,377 | ~1:10 |
+
+---
+
+## Repository Structure
 ```
-Team505_phase2/
-├── README.md                  ← You are here
-├── requirements.txt           ← Python dependencies
-├── .gitignore
-│
 ├── data/
-│   ├── metadata/              ← ChestX-ray14 CSV files (not tracked)
-│   └── splits/                ← Train / val / test patient-wise splits
-│       ├── train.csv
-│       ├── val.csv
-│       ├── test.csv           ← Locked — not used in dev mode
-│       └── train_dev.csv      ← ~10% subset for rapid iteration
-│
-├── notebooks/
-│   ├── Team505_Preprocessing.ipynb            ← Shared preprocessing pipeline
-│   ├── Team505_EDA.ipynb                      ← Shared exploratory data analysis
-│   ├── Ammar_Ahmed_DenseNet121.ipynb          ← Ammar — DenseNet-121
-│   ├── Hosam_Nabil_DenseNet201.ipynb          ← Hosam — DenseNet-201
-│   ├── Mohamed_Eslam_Xception.ipynb           ← Mohamed — Xception
-│   └── Abdelrahman_Mostafa_ViTB16.ipynb       ← Abdelrahman — ViT-B/16
-│
-├── outputs/
-│   ├── eda/                   ← EDA charts (8 PNGs)
-│   ├── preprocessing/         ← Preprocessing artifacts
-│   ├── Ammar_Ahmed/           ← DenseNet-121 outputs
-│   │   ├── best_model.pth
-│   │   ├── training_curves.png
-│   │   ├── confusion_matrix.png
-│   │   ├── training_history.csv
-│   │   ├── validation_metrics.csv
-│   │   └── xai/               ← XAI visualizations
-│   │       ├── gradcam/       ← 8 images (TP/TN/FP/FN × 2)
-│   │       ├── lime/          ← 8 images
-│   │       └── integrated_gradients/  ← 8 images
-│   ├── Hosam_Nabil/           ← DenseNet-201 (same structure)
-│   ├── Mohamed_Eslam/         ← Xception (same structure)
-│   └── Abdelrahman_Mostafa/   ← ViT-B/16 (same structure)
-│
-├── figures/                   ← Publication-quality figures
-│
-├── report/
-│   ├── Team505_Phase2_Report.pdf  ← Progress report
-│   ├── model_comparison.md        ← 4-model metric comparison table
-│   ├── xai_comparison.md          ← XAI method comparison
-│   ├── key_findings.md            ← Summary of project findings
-│   ├── ethics_legal.md            ← Ethical and legal considerations
-│   ├── paper_draft.md             ← Full paper structure with results
-│   └── presentation_outline.md   ← Slide-ready presentation structure
-│
+│   ├── splits/          ← train/val/test CSVs
+│   ├── metadata/        ← dataset_summary.json, master_registry.csv
+│   ├── raw/             ← NIH images + Data_Entry_2017.csv
+│   └── external/        ← pneumonia_1, pneumonia_2
+├── figures/             ← generated plots and EDA visualisations
+├── notebooks/           ← 12 model notebooks + EDA + Preprocessing
+├── outputs/             ← best_model.pth, metrics, XAI images per member
+├── report/              ← all documentation files
 ├── scripts/
-│   └── run_xai_demo.py       ← XAI pipeline runner (GPU)
-│
-└── src/                       ← Shared reusable Python modules
-    ├── data/                  ← Metadata loading, dataset utilities
-    ├── features/              ← Image feature engineering
-    ├── models/                ← Model factory functions
-    ├── xai/                   ← Explainability methods
-    │   ├── __init__.py
-    │   ├── gradcam.py         ← Grad-CAM implementation
-    │   ├── lime_explainer.py  ← LIME implementation
-    │   ├── shap_explainer.py  ← SHAP (PartitionExplainer) implementation
-    │   └── integrated_gradients.py  ← Integrated Gradients (Captum)
-    └── utils/                 ← Config, metrics, plotting, seeding
+│   ├── rebuild_clean_splits.py
+│   └── run_xai_demo.py
+├── src/
+│   └── xai/             ← gradcam.py, lime_explainer.py, shap_explainer.py, integrated_gradients.py
+└── requirements.txt     ← project dependencies
 ```
 
 ---
 
-## Team Members — Approved Paper / Model Mapping
+## How to Reproduce
 
-| Member | Model | Params | Approved Paper | Notebook |
-|---|---|---|---|---|
-| Ammar Ahmed | DenseNet-121 | 6.95M | Rajpurkar et al. / CheXNet | `Ammar_Ahmed_DenseNet121.ipynb` |
-| Hosam Nabil | DenseNet-201 | 18.09M | Rahman et al. | `Hosam_Nabil_DenseNet201.ipynb` |
-| Mohamed Eslam | Xception | 20.81M | Güler & Polat | `Mohamed_Eslam_Xception.ipynb` |
-| Abdelrahman Mostafa | ViT-B/16 | 85.80M | Singh et al. | `Abdelrahman_Mostafa_ViTB16.ipynb` |
+### 1. Rebuild data splits
+```bash
+python scripts/rebuild_clean_splits.py
+```
+
+### 2. Train a model
+Open any notebook in `notebooks/`.
+Set `RUN_MODE = "full"` and run all cells.
+
+### 3. Run XAI pipeline
+```bash
+python scripts/run_xai_demo.py
+```
 
 ---
 
-## Preliminary Results (DEV Mode)
+## Training Pipeline — Key Decisions
+| Decision | Choice | Reason |
+|---|---|---|
+| Loss function | Focal Loss (α=0.75, γ=2.0, smoothing=0.05) | Fixes calibration collapse from extreme imbalance |
+| Batch sampling | WeightedRandomSampler (20% pos/batch) | Stabilises gradient updates |
+| Training data | NIH-only positives, No Finding negatives | External data caused domain shift failure |
+| Unfreeze strategy | Progressive: head → partial → full | Prevents destroying pretrained features |
+| Overfitting defence | Dropout(0.6) + Mixup(α=0.3) + WD=5e-3 | Small positive count (1,004) vs 7–140M params |
+| Evaluation | TTA (5 variants) on val.csv | Robust evaluation on held-out patient split |
 
-| Model | ROC-AUC | F1 | Precision | Recall | Accuracy |
-|-------|:-------:|:--:|:---------:|:------:|:--------:|
-| DenseNet-121 | 0.608 | **0.208** | **0.135** | 0.455 | **0.690** |
-| DenseNet-201 | 0.605 | 0.192 | 0.110 | **0.773** | 0.417 |
-| Xception | **0.616** | 0.205 | 0.128 | 0.526 | 0.636 |
-| ViT-B/16 | 0.577 | 0.198 | 0.122 | 0.526 | 0.619 |
+---
 
-All models trained on `train_dev.csv` (~6K images). See `report/model_comparison.md` for details.
+## Final Results — All 12 Models
+**Evaluation:** TTA with 5 variants on val.csv (2,611 rows, 186 positives)
+TTA variants: original, horizontal flip, +7° rotation, -7° rotation, brightness+0.15
+
+| Rank | Model | Member | Params | AUC | PR-AUC | F1 | Precision | Recall | Threshold | Best Epoch |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | ResNet-101 | Mohamed | 44.5M | 0.6747 | 0.1248 | 0.2088 | 0.1437 | 0.3817 | 0.41 | 9 |
+| 2 | EfficientNet-B3 | Ammar | 12.2M | 0.6740 | 0.1217 | 0.2198 | 0.1375 | 0.5484 | 0.41 | 29 |
+| 3 | MobileNet-V2 | Hosam | 3.4M | 0.6676 | 0.1218 | 0.2062 | 0.1229 | 0.6398 | 0.37 | 22 |
+| 4 | InceptionV3 | Mohamed | 23.8M | 0.6647 | 0.1344 | 0.2056 | 0.1708 | 0.2581 | 0.46 | 15 |
+| 5 | Xception | Mohamed | 20.8M | 0.6633 | 0.1160 | 0.2005 | 0.1280 | 0.4624 | 0.31 | 19 |
+| 6 | DenseNet-201 | Hosam | 18.1M | 0.6599 | 0.1186 | 0.2055 | 0.1361 | 0.4194 | 0.42 | 12 |
+| 7 | DenseNet-121 | Ammar | 6.95M | 0.6572 | 0.1230 | 0.2014 | 0.1818 | 0.2258 | 0.38 | 40 |
+| 8 | ResNet-50 | Ammar | 25.6M | 0.6570 | 0.1216 | 0.2072 | 0.1311 | 0.4946 | 0.35 | 12 |
+| 9 | VGG-16 | Hosam | 138M | 0.6517 | 0.1126 | 0.2024 | 0.1218 | 0.5968 | 0.35 | 16 |
+| 10 | DeiT-S | Abdelrahman | 22M | 0.6463 | 0.1099 | 0.1931 | 0.1342 | 0.3441 | 0.43 | 14 |
+| 11 | Swin-T | Abdelrahman | 28M | 0.6451 | 0.1095 | 0.2006 | 0.1227 | 0.5484 | 0.42 | 15 |
+| 12 | ViT-B/16 | Abdelrahman | 85.8M | 0.6246 | 0.1054 | 0.1845 | 0.1153 | 0.4624 | 0.48 | 13 |
 
 ---
 
 ## XAI Methods
+| Method | Type | Cost | CNN | Transformer |
+|---|---|---|---|---|
+| Grad-CAM | Gradient-based heatmap | Low | ✅ | ❌ → Attention Rollout |
+| LIME | Perturbation superpixels | Medium | ✅ | ✅ |
+| SHAP | Shapley value attribution | High | ✅ | ✅ |
+| Integrated Gradients | Path-integration | High | ✅ | ✅ |
 
-Four explainability methods are implemented in `src/xai/`:
-
-| Method | Type | Output |
-|--------|------|--------|
-| **Grad-CAM** | Gradient-based | Heatmap overlays |
-| **LIME** | Perturbation-based | Superpixel regions |
-| **SHAP** | Shapley-value | Pixel attribution maps |
-| **Integrated Gradients** | Path-integration | Pixel attribution maps |
-
-XAI outputs are organized under `outputs/<member>/xai/<method>/` with 8 images per method (2 TP, 2 TN, 2 FP, 2 FN).
+XAI outputs: `outputs/<member>/<model>/xai/<method>/`
+8 images per method per model (2×TP, 2×TN, 2×FP, 2×FN)
 
 ---
 
-## How to Run
-
-### Prerequisites
-```bash
-pip install -r requirements.txt
-```
-
-### Training (already done)
-Open any model notebook in `notebooks/` with Jupyter. Set `RUN_MODE = "dev"` for quick training or `"full"` for final results.
-
-### XAI Pipeline
-```bash
-cd Team505_phase2
-.venv\Scripts\python.exe scripts\run_xai_demo.py
-```
-
-This script:
-1. Loads each trained model checkpoint sequentially
-2. Selects a shared evaluation subset (TP/TN/FP/FN from validation set)
-3. Runs Grad-CAM, LIME, SHAP, and Integrated Gradients
-4. Saves visualizations to `outputs/<member>/xai/<method>/`
-
-**Resource notes:**
-- Requires GPU for reasonable execution time (~15 min total)
-- Processes one model at a time to manage memory
-- SHAP uses PartitionExplainer which requires multiple forward passes per image
-
----
-
-## Notes
-
-- **Patient-wise splitting** is enforced — no patient appears in more than one split
-- Raw images are **not** stored in this repo — see `data/metadata/` for CSV references
-- Large model checkpoints (`.pth` files) should be listed in `.gitignore`
-- All models use `RANDOM_SEED = 42` for reproducibility
-- The official test split is **locked** and not used during development
+## References
+[1] Rajpurkar et al. (2018) — CheXNeXt, PLOS Medicine
+[2] Stephen et al. (2019) — Custom CNN, J. Healthcare Eng.
+[3] Rahman et al. (2020) — Transfer learning, Applied Sciences
+[4] Chowdhury et al. (2020) — COVID+Pneumonia, IEEE Access
+[5] Hashmi et al. (2020) — Weighted ensemble, Diagnostics
+[6] Salehi et al. (2021) — Grad-CAM comparison, Br. J. Radiol.
+[7] Kundu et al. (2021) — Ensemble, PLOS ONE
+[8] Bhandari et al. (2022) — SHAP+LIME+GradCAM, Comput. Biol. Med.
+[9] Guler & Polat (2022) — Xception, J. Artif. Intell. Syst.
+[10] Ukwuoma et al. (2023) — Hybrid transformer, J. Adv. Res.
+[11] Barzas et al. (2024) — Human-centered XAI, PLOS ONE
+[12] Singh et al. (2024) — ViT for CXR, Sci. Reports
+[13] Wang et al. (2017) — NIH ChestX-ray14 dataset, CVPR
+[14] Lin et al. (2017) — Focal Loss, ICCV
+[15] Selvaraju et al. (2017) — Grad-CAM, ICCV
