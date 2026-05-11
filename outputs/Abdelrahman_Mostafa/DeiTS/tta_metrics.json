@@ -1,0 +1,18 @@
+{
+  "model": "DeiT-S",
+  "evaluation": "TTA_5variants",
+  "best_epoch": 14,
+  "tta_roc_auc": 0.6463,
+  "tta_pr_auc": 0.1099,
+  "tta_f1": 0.1931,
+  "tta_threshold": 0.43,
+  "tta_precision": 0.1342,
+  "tta_recall": 0.3441,
+  "tta_tp": 64,
+  "tta_fp": 413,
+  "tta_tn": 2012,
+  "tta_fn": 122,
+  "single_roc_auc": 0.6463,
+  "single_pr_auc": 0.1106,
+  "single_f1": 0.1941
+}
