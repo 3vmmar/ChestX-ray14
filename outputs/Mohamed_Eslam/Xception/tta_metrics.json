@@ -1,0 +1,18 @@
+{
+  "model": "Xception",
+  "evaluation": "TTA_5variants",
+  "best_epoch": 19,
+  "tta_roc_auc": 0.6633,
+  "tta_pr_auc": 0.116,
+  "tta_f1": 0.2005,
+  "tta_threshold": 0.31,
+  "tta_precision": 0.128,
+  "tta_recall": 0.4624,
+  "tta_tp": 86,
+  "tta_fp": 586,
+  "tta_tn": 1839,
+  "tta_fn": 100,
+  "single_roc_auc": 0.6606,
+  "single_pr_auc": 0.1155,
+  "single_f1": 0.1988
+}

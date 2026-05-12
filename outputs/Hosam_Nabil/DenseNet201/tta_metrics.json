@@ -1,0 +1,18 @@
+{
+  "model": "DenseNet201",
+  "evaluation": "TTA_5variants",
+  "best_epoch": 12,
+  "tta_roc_auc": 0.6599,
+  "tta_pr_auc": 0.1186,
+  "tta_f1": 0.2055,
+  "tta_threshold": 0.42,
+  "tta_precision": 0.1361,
+  "tta_recall": 0.4194,
+  "tta_tp": 78,
+  "tta_fp": 495,
+  "tta_tn": 1930,
+  "tta_fn": 108,
+  "single_roc_auc": 0.6527,
+  "single_pr_auc": 0.1193,
+  "single_f1": 0.2152
+}
