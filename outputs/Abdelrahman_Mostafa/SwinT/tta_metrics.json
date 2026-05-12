@@ -1,0 +1,18 @@
+{
+  "model": "Swin-T",
+  "evaluation": "TTA_5variants",
+  "best_epoch": 15,
+  "tta_roc_auc": 0.6451,
+  "tta_pr_auc": 0.1095,
+  "tta_f1": 0.2006,
+  "tta_threshold": 0.42,
+  "tta_precision": 0.1227,
+  "tta_recall": 0.5484,
+  "tta_tp": 102,
+  "tta_fp": 729,
+  "tta_tn": 1696,
+  "tta_fn": 84,
+  "single_roc_auc": 0.6405,
+  "single_pr_auc": 0.1063,
+  "single_f1": 0.1989
+}
