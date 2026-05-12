@@ -1,0 +1,18 @@
+{
+  "model": "VGG-16",
+  "evaluation": "TTA_5variants",
+  "best_epoch": 16,
+  "tta_roc_auc": 0.6517,
+  "tta_pr_auc": 0.1126,
+  "tta_f1": 0.2024,
+  "tta_threshold": 0.35,
+  "tta_precision": 0.1218,
+  "tta_recall": 0.5968,
+  "tta_tp": 111,
+  "tta_fp": 800,
+  "tta_tn": 1625,
+  "tta_fn": 75,
+  "single_roc_auc": 0.6511,
+  "single_pr_auc": 0.112,
+  "single_f1": 0.1966
+}
