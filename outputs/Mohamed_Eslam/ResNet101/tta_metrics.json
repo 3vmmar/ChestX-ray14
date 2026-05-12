@@ -1,0 +1,18 @@
+{
+  "model": "ResNet-101",
+  "evaluation": "TTA_5variants",
+  "best_epoch": 9,
+  "tta_roc_auc": 0.6747,
+  "tta_pr_auc": 0.1248,
+  "tta_f1": 0.2088,
+  "tta_threshold": 0.41,
+  "tta_precision": 0.1437,
+  "tta_recall": 0.3817,
+  "tta_tp": 71,
+  "tta_fp": 423,
+  "tta_tn": 2002,
+  "tta_fn": 115,
+  "single_roc_auc": 0.6719,
+  "single_pr_auc": 0.1271,
+  "single_f1": 0.2059
+}
