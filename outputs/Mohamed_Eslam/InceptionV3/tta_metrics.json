@@ -1,0 +1,18 @@
+{
+  "model": "InceptionV3",
+  "evaluation": "TTA_5variants",
+  "best_epoch": 15,
+  "tta_roc_auc": 0.6647,
+  "tta_pr_auc": 0.1344,
+  "tta_f1": 0.2056,
+  "tta_threshold": 0.46,
+  "tta_precision": 0.1708,
+  "tta_recall": 0.2581,
+  "tta_tp": 48,
+  "tta_fp": 233,
+  "tta_tn": 2192,
+  "tta_fn": 138,
+  "single_roc_auc": 0.6569,
+  "single_pr_auc": 0.1397,
+  "single_f1": 0.2108
+}
