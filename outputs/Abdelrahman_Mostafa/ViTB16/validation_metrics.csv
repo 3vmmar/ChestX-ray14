@@ -1,0 +1,2 @@
+model,mode,best_epoch,threshold,accuracy,precision,recall,f1_score,roc_auc
+ViT-B/16,FULL,13,0.5,0.7281,0.117,0.4301,0.1839,0.618
