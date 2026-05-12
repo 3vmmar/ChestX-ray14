@@ -1,0 +1,18 @@
+{
+  "model": "EfficientNet-B3",
+  "evaluation": "TTA_5variants",
+  "best_epoch": 29,
+  "tta_roc_auc": 0.674,
+  "tta_pr_auc": 0.1217,
+  "tta_f1": 0.2198,
+  "tta_threshold": 0.41,
+  "tta_precision": 0.1375,
+  "tta_recall": 0.5484,
+  "tta_tp": 102,
+  "tta_fp": 640,
+  "tta_tn": 1785,
+  "tta_fn": 84,
+  "single_roc_auc": 0.6739,
+  "single_pr_auc": 0.122,
+  "single_f1": 0.209
+}
