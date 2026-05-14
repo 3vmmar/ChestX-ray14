@@ -1,5 +1,5 @@
-# Team505 — Explainable Pneumonia Detection on ChestX-ray14
-## DSAI 305 | Spring 2026 | Phase 3 Final Submission
+# Explainable Pneumonia Detection on ChestX-ray14
+## DSAI 305 | Spring 2026 | Final Submission
 **GitHub:** https://github.com/3vmmar/ChestX-ray14
 
 ---
