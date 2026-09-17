@@ -1,0 +1,427 @@
+{
+  "integrity": {
+    "pairs": [
+      {
+        "pair": "train n val",
+        "shared_patients": 0,
+        "shared_images": 0,
+        "verdict": "clean"
+      },
+      {
+        "pair": "train n test",
+        "shared_patients": 0,
+        "shared_images": 0,
+        "verdict": "clean"
+      },
+      {
+        "pair": "val n test",
+        "shared_patients": 0,
+        "shared_images": 0,
+        "verdict": "clean"
+      }
+    ],
+    "sizes": [
+      {
+        "split": "train",
+        "images": 11943,
+        "patients": 5261,
+        "images_per_patient": 2.27,
+        "positives": 1004,
+        "negatives": 10939,
+        "pos_rate_%": 8.41,
+        "ratio": "1:10.9"
+      },
+      {
+        "split": "val",
+        "images": 2611,
+        "patients": 1127,
+        "images_per_patient": 2.32,
+        "positives": 186,
+        "negatives": 2425,
+        "pos_rate_%": 7.12,
+        "ratio": "1:13.0"
+      },
+      {
+        "split": "test",
+        "images": 2618,
+        "patients": 1128,
+        "images_per_patient": 2.32,
+        "positives": 241,
+        "negatives": 2377,
+        "pos_rate_%": 9.21,
+        "ratio": "1:9.9"
+      }
+    ],
+    "registry_coverage": [
+      {
+        "split": "train",
+        "images": 11943,
+        "in_registry_%": 59.2,
+        "with_findings_%": 59.2
+      },
+      {
+        "split": "val",
+        "images": 2611,
+        "in_registry_%": 56.8,
+        "with_findings_%": 56.8
+      },
+      {
+        "split": "test",
+        "images": 2618,
+        "in_registry_%": 56.7,
+        "with_findings_%": 56.7
+      }
+    ]
+  },
+  "cooccurrence": {
+    "meta": {
+      "target": "Pneumonia",
+      "images_with_target": 742,
+      "target_alone": 202,
+      "target_alone_%": 27.2,
+      "with_cofinding_%": 72.8
+    },
+    "table": [
+      {
+        "co_finding": "Infiltration",
+        "images": 287,
+        "%_of_pneumonia": 38.7
+      },
+      {
+        "co_finding": "Atelectasis",
+        "images": 148,
+        "%_of_pneumonia": 19.9
+      },
+      {
+        "co_finding": "Effusion",
+        "images": 137,
+        "%_of_pneumonia": 18.5
+      },
+      {
+        "co_finding": "Edema",
+        "images": 128,
+        "%_of_pneumonia": 17.3
+      },
+      {
+        "co_finding": "Consolidation",
+        "images": 53,
+        "%_of_pneumonia": 7.1
+      },
+      {
+        "co_finding": "Nodule",
+        "images": 39,
+        "%_of_pneumonia": 5.3
+      },
+      {
+        "co_finding": "Mass",
+        "images": 32,
+        "%_of_pneumonia": 4.3
+      },
+      {
+        "co_finding": "Pleural_Thickening",
+        "images": 22,
+        "%_of_pneumonia": 3.0
+      },
+      {
+        "co_finding": "Cardiomegaly",
+        "images": 14,
+        "%_of_pneumonia": 1.9
+      },
+      {
+        "co_finding": "Pneumothorax",
+        "images": 12,
+        "%_of_pneumonia": 1.6
+      }
+    ]
+  },
+  "findings_per_image": [
+    {
+      "class_name": "Pneumonia",
+      "mean": 2.2,
+      "max": 9,
+      "count": 532
+    },
+    {
+      "class_name": "Atelectasis",
+      "mean": 1.93,
+      "max": 7,
+      "count": 603
+    },
+    {
+      "class_name": "Consolidation",
+      "mean": 1.85,
+      "max": 5,
+      "count": 524
+    },
+    {
+      "class_name": "Edema",
+      "mean": 1.77,
+      "max": 5,
+      "count": 562
+    },
+    {
+      "class_name": "Cardiomegaly",
+      "mean": 1.67,
+      "max": 6,
+      "count": 569
+    },
+    {
+      "class_name": "Effusion",
+      "mean": 1.59,
+      "max": 4,
+      "count": 586
+    },
+    {
+      "class_name": "Emphysema",
+      "mean": 1.51,
+      "max": 5,
+      "count": 508
+    },
+    {
+      "class_name": "Mass",
+      "mean": 1.23,
+      "max": 3,
+      "count": 644
+    },
+    {
+      "class_name": "Infiltration",
+      "mean": 1.16,
+      "max": 3,
+      "count": 643
+    },
+    {
+      "class_name": "Nodule",
+      "mean": 1.07,
+      "max": 3,
+      "count": 681
+    },
+    {
+      "class_name": "No Finding",
+      "mean": 1.0,
+      "max": 1,
+      "count": 719
+    },
+    {
+      "class_name": "Pneumothorax",
+      "mean": 1.0,
+      "max": 1,
+      "count": 497
+    }
+  ],
+  "negatives_carrying_finding": [
+    {
+      "finding": "Infiltration",
+      "negatives_with_it": 1477,
+      "%_of_labelled_negatives": 22.6
+    },
+    {
+      "finding": "Effusion",
+      "negatives_with_it": 1172,
+      "%_of_labelled_negatives": 17.9
+    },
+    {
+      "finding": "Edema",
+      "negatives_with_it": 614,
+      "%_of_labelled_negatives": 9.4
+    },
+    {
+      "finding": "Atelectasis",
+      "negatives_with_it": 603,
+      "%_of_labelled_negatives": 9.2
+    },
+    {
+      "finding": "Consolidation",
+      "negatives_with_it": 590,
+      "%_of_labelled_negatives": 9.0
+    }
+  ],
+  "class_share": {
+    "train": {
+      "Atelectasis": 8.35,
+      "Cardiomegaly": 8.76,
+      "Consolidation": 8.19,
+      "Edema": 8.57,
+      "Effusion": 8.36,
+      "Emphysema": 8.26,
+      "Infiltration": 8.31,
+      "Mass": 7.99,
+      "No Finding": 8.41,
+      "Nodule": 8.4,
+      "Pneumonia": 8.41,
+      "Pneumothorax": 8.0
+    },
+    "val": {
+      "Atelectasis": 8.2,
+      "Cardiomegaly": 7.47,
+      "Consolidation": 8.66,
+      "Edema": 8.23,
+      "Effusion": 8.31,
+      "Emphysema": 8.62,
+      "Infiltration": 7.81,
+      "Mass": 10.11,
+      "No Finding": 8.08,
+      "Nodule": 7.43,
+      "Pneumonia": 7.12,
+      "Pneumothorax": 9.96
+    },
+    "test": {
+      "Atelectasis": 8.4,
+      "Cardiomegaly": 7.26,
+      "Consolidation": 8.67,
+      "Edema": 7.37,
+      "Effusion": 8.21,
+      "Emphysema": 8.37,
+      "Infiltration": 8.98,
+      "Mass": 8.14,
+      "No Finding": 8.25,
+      "Nodule": 8.94,
+      "Pneumonia": 9.21,
+      "Pneumothorax": 8.21
+    }
+  },
+  "split_drift_chi2": {
+    "chi2": 48.59,
+    "p_value": 0.0009062357532577864,
+    "dof": 22,
+    "cramers_v": 0.0376
+  },
+  "confounds": [
+    {
+      "factor": "view_position",
+      "n": 11943,
+      "chi2": 36.35,
+      "p_value": 1.64699561225614e-09,
+      "dof": 1,
+      "cramers_v": 0.0552,
+      "pos_rate_by_level_%": {
+        "AP": 10.02,
+        "PA": 6.94
+      }
+    },
+    {
+      "factor": "patient_gender",
+      "n": 7068,
+      "chi2": 8.0,
+      "p_value": 0.0046847955336480895,
+      "dof": 1,
+      "cramers_v": 0.0336,
+      "pos_rate_by_level_%": {
+        "F": 6.54,
+        "M": 8.35
+      }
+    },
+    {
+      "variable": "patient_age",
+      "n_pos": 532,
+      "n_neg": 6536,
+      "median_pos": 48.0,
+      "median_neg": 50.0,
+      "mean_pos": 45.13,
+      "mean_neg": 47.89,
+      "u_stat": 1595885.5,
+      "p_value": 0.0016141928315019445,
+      "cohens_d": -0.1565
+    }
+  ],
+  "image_quality": {
+    "n_sampled": 250,
+    "border_frac_mean": 0.0116,
+    "border_frac_max": 0.3293,
+    "pct_border_over_5": 6.0,
+    "sizes": "{(1024, 1024): 250}"
+  },
+  "duplicate_hashes": 0,
+  "negative_difficulty": {
+    "source": "val_probs_12class.csv",
+    "summary": {
+      "positive_mean_score": 0.1528,
+      "auc_vs_all_negatives": 0.6966,
+      "auc_vs_hardest_3": 0.5616,
+      "auc_vs_rest": 0.7456,
+      "hardest_3": [
+        "Edema",
+        "Consolidation",
+        "Infiltration"
+      ]
+    },
+    "table": [
+      {
+        "class_name": "Edema",
+        "mean": 0.1521,
+        "median": 0.1394,
+        "count": 215,
+        "gap_to_positive_mean": 0.0007
+      },
+      {
+        "class_name": "Consolidation",
+        "mean": 0.135,
+        "median": 0.1194,
+        "count": 226,
+        "gap_to_positive_mean": 0.0178
+      },
+      {
+        "class_name": "Infiltration",
+        "mean": 0.1162,
+        "median": 0.1009,
+        "count": 204,
+        "gap_to_positive_mean": 0.0366
+      },
+      {
+        "class_name": "Effusion",
+        "mean": 0.1067,
+        "median": 0.0814,
+        "count": 217,
+        "gap_to_positive_mean": 0.0461
+      },
+      {
+        "class_name": "Atelectasis",
+        "mean": 0.1049,
+        "median": 0.0903,
+        "count": 214,
+        "gap_to_positive_mean": 0.0479
+      },
+      {
+        "class_name": "Cardiomegaly",
+        "mean": 0.1017,
+        "median": 0.0851,
+        "count": 195,
+        "gap_to_positive_mean": 0.0511
+      },
+      {
+        "class_name": "No Finding",
+        "mean": 0.0915,
+        "median": 0.0812,
+        "count": 211,
+        "gap_to_positive_mean": 0.0613
+      },
+      {
+        "class_name": "Nodule",
+        "mean": 0.0869,
+        "median": 0.0696,
+        "count": 194,
+        "gap_to_positive_mean": 0.0659
+      },
+      {
+        "class_name": "Pneumothorax",
+        "mean": 0.072,
+        "median": 0.0483,
+        "count": 260,
+        "gap_to_positive_mean": 0.0808
+      },
+      {
+        "class_name": "Mass",
+        "mean": 0.0706,
+        "median": 0.0558,
+        "count": 264,
+        "gap_to_positive_mean": 0.0822
+      },
+      {
+        "class_name": "Emphysema",
+        "mean": 0.0644,
+        "median": 0.0363,
+        "count": 225,
+        "gap_to_positive_mean": 0.0884
+      }
+    ]
+  }
+}
