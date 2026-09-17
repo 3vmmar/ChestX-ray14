@@ -65,14 +65,22 @@ python scripts/run_xai_demo.py
 |---|---|---|
 | Loss function | Focal Loss (α=0.75, γ=2.0, smoothing=0.05) | Fixes calibration collapse from extreme imbalance |
 | Batch sampling | WeightedRandomSampler (20% pos/batch) | Stabilises gradient updates |
-| Training data | NIH-only positives, No Finding negatives | External data caused domain shift failure |
-| Unfreeze strategy | Progressive: head → partial → full | Prevents destroying pretrained features |
-| Overfitting defence | Dropout(0.6) + Mixup(α=0.3) + WD=5e-3 | Small positive count (1,004) vs 7–140M params |
-| Evaluation | TTA (5 variants) on val.csv | Robust evaluation on held-out patient split |
+| Training data | NIH-only; negatives are all 11 non-pneumonia classes (~1,000 each) | External data caused domain shift failure |
+| Data curriculum | 3 phases by measured negative difficulty: No Finding -> moderate -> Edema/Consolidation/Infiltration | Those 3 classes are 27% of negatives and score at chance (AUC 0.5616); deferring them lets a boundary form first |
+| Unfreeze strategy | Progressive: head → partial → full, beginning inside data phase 3 | Prevents destroying pretrained features (LP-FT pattern) |
+| Overfitting defence | Dropout(0.6) + Mixup(α=0.3) + WD=5e-3 + early-stop patience 8 | Small positive count (1,004) vs 7–140M params; val AUC peaks ~epoch 13 then decays |
+| Model selection | Checkpoint and threshold chosen on val.csv | Selection set, deliberately separate from reporting |
+| Reported metrics | TTA (5 variants) on test.csv, threshold frozen from val | test.csv never influences checkpoint, threshold or any hyperparameter |
 
 ---
 
 ## Final Results — All 12 Models
+>  **STALE — these are pre-fix numbers.** The table below was produced when the checkpoint
+>  *and* the decision threshold were both selected on val.csv and then reported on it, so every
+>  value is a maximum taken over its own reporting set. The notebooks now score test.csv with the
+>  threshold frozen from val; re-run them and replace this table with `test_metrics_locked.json`.
+>  Expect the corrected figures to be lower.
+
 **Evaluation:** TTA with 5 variants on val.csv (2,611 rows, 186 positives)
 TTA variants: original, horizontal flip, +7° rotation, -7° rotation, brightness+0.15
 
