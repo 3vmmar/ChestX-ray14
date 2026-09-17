@@ -63,6 +63,7 @@ python scripts/run_xai_demo.py
 ## Training Pipeline — Key Decisions
 | Decision | Choice | Reason |
 |---|---|---|
+| Preprocessing | CLAHE at native res (tiles held at ~64px) → Resize(336) → rotate ≤10° → safe centre crop → 288 crop | Train and val share one field of view; rotation no longer fills 9.1% of each image with black |
 | Loss function | Focal Loss (α=0.75, γ=2.0, smoothing=0.05) | Fixes calibration collapse from extreme imbalance |
 | Batch sampling | WeightedRandomSampler (20% pos/batch) | Stabilises gradient updates |
 | Training data | NIH-only; negatives are all 11 non-pneumonia classes (~1,000 each) | External data caused domain shift failure |

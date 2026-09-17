@@ -7,9 +7,9 @@ not enough for a paired significance test. This script re-runs the exact
 5-variant TTA evaluation used in the notebooks and writes one row per image,
 so that scripts/compare_models.py can run a DeLong test on the raw scores.
 
-Preprocessing is replicated from the training notebooks:
-    CLAHE(clip=2.0, tile=8x8) -> Resize(S, S) -> ToTensor -> ImageNet norm
-with S taken per-model from src/modelzoo.py (288 CNN, 299 InceptionV3, 224 ViT).
+Preprocessing comes from src/preprocessing.py, the same module the notebooks
+use, so the evaluation geometry cannot drift between them. Input size is
+taken per-model from src/modelzoo.py (288 CNN, 299 InceptionV3, 224 ViT).
 
 TTA variants (same order as the notebooks):
     0 plain          1 horizontal flip
@@ -41,40 +41,25 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from src import modelzoo  # noqa: E402
+from src import preprocessing as prep  # noqa: E402
 
 DATA_SPLITS = PROJECT_ROOT / "data" / "splits"
 OUT_ROOT = PROJECT_ROOT / "outputs" / "models"
 
-IMAGENET_MEAN = [0.485, 0.456, 0.406]
-IMAGENET_STD = [0.229, 0.224, 0.225]
 SEED = 42
 
 
-class CLAHETransform:
-    """CLAHE with pre-downscale guard (verbatim from the training notebooks)."""
-
-    def __call__(self, pil_img):
-        if max(pil_img.size) > 512:
-            pil_img = pil_img.resize((512, 512), Image.LANCZOS)
-        img_np = np.array(pil_img.convert("L"))
-        clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
-        enhanced = clahe.apply(img_np)
-        return Image.fromarray(enhanced).convert("RGB")
+CLAHETransform = prep.CLAHETransform
+IMAGENET_MEAN = prep.IMAGENET_MEAN
+IMAGENET_STD = prep.IMAGENET_STD
 
 
 def build_tta_transforms(size):
-    norm = T.Normalize(mean=IMAGENET_MEAN, std=IMAGENET_STD)
-    base = [CLAHETransform(), T.Resize((size, size))]
-    return [
-        T.Compose(base + [T.ToTensor(), norm]),
-        T.Compose(base + [T.RandomHorizontalFlip(p=1.0), T.ToTensor(), norm]),
-        T.Compose(base + [T.RandomRotation(degrees=(7, 7)), T.ToTensor(), norm]),
-        T.Compose(base + [T.RandomRotation(degrees=(-7, -7)), T.ToTensor(), norm]),
-        T.Compose(base + [T.ColorJitter(brightness=0.15), T.ToTensor(), norm]),
-    ]
+    """Shared with the notebooks - see src/preprocessing.py."""
+    return prep.build_tta_transforms(size)
 
 
-VARIANT_NAMES = ["plain", "hflip", "rot+7", "rot-7", "bright"]
+VARIANT_NAMES = prep.TTA_VARIANT_NAMES
 
 
 class ChestXrayDataset(Dataset):

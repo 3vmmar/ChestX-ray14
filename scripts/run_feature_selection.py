@@ -47,7 +47,7 @@ from sklearn.preprocessing import StandardScaler  # noqa: E402
 from src import modelzoo  # noqa: E402
 from src.feature_selection import methods as M  # noqa: E402
 from src.feature_selection.extractor import extract_features  # noqa: E402
-from scripts.dump_predictions import CLAHETransform, IMAGENET_MEAN, IMAGENET_STD  # noqa: E402
+from src import preprocessing as prep  # noqa: E402
 
 OUT_ROOT = PROJECT_ROOT / "outputs" / "feature_selection"
 MODELS_ROOT = PROJECT_ROOT / "outputs" / "models"
@@ -133,8 +133,7 @@ def main():
     else:
         print("  [1] extracting bottleneck features")
         size = modelzoo.img_size(name)
-        tf = T.Compose([CLAHETransform(), T.Resize((size, size)), T.ToTensor(),
-                        T.Normalize(mean=IMAGENET_MEAN, std=IMAGENET_STD)])
+        tf = prep.build_val_transforms(size)   # same geometry as training
         X = extract_features(name, df, tf, device, args.batch_size, args.workers,
                              checkpoint=MODELS_ROOT / name / "best_model.pth")
         np.save(fcache, X)
