@@ -51,3 +51,6 @@ runs/
 # Full-dataset multilabel splits (regenerate with scripts/build_multilabel_splits.py)
 data/splits_multilabel/*.csv
 outputs/multilabel_train.log
+
+# Precomputed CLAHE image cache (15GB, rebuild with scripts/build_image_cache.py)
+data/cache/

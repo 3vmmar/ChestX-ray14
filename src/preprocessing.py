@@ -102,7 +102,8 @@ def _norm():
     return T.Normalize(mean=IMAGENET_MEAN, std=IMAGENET_STD)
 
 
-def build_train_transforms(img_size, rotation_deg=ROTATION_DEG, jitter=True):
+def build_train_transforms(img_size, rotation_deg=ROTATION_DEG, jitter=True,
+                           clahe=True):
     """Training stack.
 
     Order is load-bearing: rotate on the oversized source, centre-crop away
@@ -111,8 +112,8 @@ def build_train_transforms(img_size, rotation_deg=ROTATION_DEG, jitter=True):
     RandomAffine is gone, since both its translate and its scale<1 reintroduce
     black borders that the crop can no longer remove.
     """
-    ops = [
-        CLAHETransform(),
+    ops = ([CLAHETransform()] if clahe else [])
+    ops += [
         T.Resize(train_resize_for(img_size)),
         T.RandomRotation(degrees=rotation_deg),
         T.CenterCrop(safe_size_for(img_size)),   # discard rotated corners
@@ -127,10 +128,9 @@ def build_train_transforms(img_size, rotation_deg=ROTATION_DEG, jitter=True):
     return T.Compose(ops)
 
 
-def build_val_transforms(img_size):
+def build_val_transforms(img_size, clahe=True):
     """Deterministic evaluation stack at the SAME scale as training."""
-    return T.Compose([
-        CLAHETransform(),
+    return T.Compose(([CLAHETransform()] if clahe else []) + [
         T.Resize(train_resize_for(img_size)),
         T.CenterCrop(img_size),
         T.ToTensor(),
@@ -138,13 +138,13 @@ def build_val_transforms(img_size):
     ])
 
 
-def build_tta_transforms(img_size):
+def build_tta_transforms(img_size, clahe=True):
     """The 5 TTA variants, all sharing the evaluation geometry.
 
     Order matches the reported protocol: plain, hflip, +7, -7, brightness.
     """
     resize = train_resize_for(img_size)
-    base = [CLAHETransform(), T.Resize(resize)]
+    base = ([CLAHETransform()] if clahe else []) + [T.Resize(resize)]
     tail = [T.CenterCrop(img_size), T.ToTensor(), _norm()]
     return [
         T.Compose(base + tail),

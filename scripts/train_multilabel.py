@@ -45,7 +45,7 @@ from torch.utils.data import DataLoader, Dataset
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from src import modelzoo, preprocessing as prep  # noqa: E402
+from src import imagecache as IC, modelzoo, preprocessing as prep  # noqa: E402
 
 SPLITS = PROJECT_ROOT / "data" / "splits_multilabel"
 OUT_ROOT = PROJECT_ROOT / "outputs" / "multilabel"
@@ -78,13 +78,27 @@ def loaders(args, img_size):
     te = pd.read_csv(SPLITS / "test.csv")
     if args.smoke:
         tr, va, te = tr.head(2000), va.head(600), te.head(600)
-    mk = lambda df, tf, sh: DataLoader(
-        MultiLabelCXR(df, tf), batch_size=args.batch_size, shuffle=sh,
-        num_workers=args.workers, pin_memory=True,
-        persistent_workers=args.workers > 0, drop_last=sh)
-    return (mk(tr, prep.build_train_transforms(img_size), True),
-            mk(va, prep.build_val_transforms(img_size), False),
-            mk(te, prep.build_val_transforms(img_size), False), tr, va, te)
+
+    cache = None
+    if args.use_cache:
+        cache = IC.ImageCache(args.cache_size)
+        print(f"using image cache: {len(cache):,} films at "
+              f"{cache.size}x{cache.size} (CLAHE already applied)")
+
+    # when reading the cache, CLAHE is already baked in and must not run twice
+    clahe = cache is None
+    train_tf = prep.build_train_transforms(img_size, clahe=clahe)
+    eval_tf = prep.build_val_transforms(img_size, clahe=clahe)
+
+    def make(df, tf, shuffle):
+        ds = (IC.CachedCXRDataset(df, tf, cache, label_cols=FINDINGS)
+              if cache is not None else MultiLabelCXR(df, tf))
+        return DataLoader(ds, batch_size=args.batch_size, shuffle=shuffle,
+                          num_workers=args.workers, pin_memory=True,
+                          persistent_workers=args.workers > 0, drop_last=shuffle)
+
+    return (make(tr, train_tf, True), make(va, eval_tf, False),
+            make(te, eval_tf, False), tr, va, te)
 
 
 @torch.no_grad()
@@ -131,6 +145,9 @@ def main():
     ap.add_argument("--unfreeze-epoch", type=int, default=2,
                     help="epoch at which the whole backbone unfreezes")
     ap.add_argument("--no-amp", action="store_true")
+    ap.add_argument("--use-cache", action="store_true",
+                    help="read from the precomputed CLAHE cache (10x faster loading)")
+    ap.add_argument("--cache-size", type=int, default=IC.CACHE_SIZE)
     ap.add_argument("--init-from", default=None,
                     help="SimCLR backbone from scripts/pretrain_ssl.py")
     ap.add_argument("--resume", action="store_true")
