@@ -1,4 +1,4 @@
-# XAI Method Comparison — Team505 Phase 3
+# XAI Method Comparison
 
 ---
 

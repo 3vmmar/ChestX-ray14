@@ -1,7 +1,7 @@
-# Comprehensive Project Analysis Report — Team505 Phase 3
+# Comprehensive Project Analysis Report
 ## Explainable Pneumonia Detection on ChestX-ray14
 
-This document synthesizes the empirical results, training methodologies, and analytical findings from Phase 3 of the Team505 Pneumonia Detection project. It is intended to serve as the master technical reference document for drafting the final academic research paper.
+This document synthesizes the empirical results, training methodologies, and analytical findings from Phase 3 of the Pneumonia Detection project. It is intended to serve as the master technical reference document for drafting the final academic research paper.
 
 ---
 

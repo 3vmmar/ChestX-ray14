@@ -1,4 +1,4 @@
-# Key Findings — Team505 Phase 3
+# Key Findings
 
 ---
 

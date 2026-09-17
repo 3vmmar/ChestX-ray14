@@ -1,4 +1,4 @@
-# Ethical and Legal Considerations — Team505 Phase 3
+# Ethical and Legal Considerations
 ## DSAI 305 | Spring 2026
 
 ---

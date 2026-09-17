@@ -1,6 +1,6 @@
 # Explainable Multi-Architecture Pneumonia Detection on NIH ChestX-ray14
 ## A Controlled Comparison of 12 Deep Learning Models with 4 XAI Methods
-### Team505 | DSAI 305 | Spring 2026
+### DSAI 305 | Spring 2026
 
 **Authors:** Ammar Ahmed (202300877), Hosam Nabil (202202228), Mohamed Eslam (202201690), Abdelrahman Mostafa (202202298)
 

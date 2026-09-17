@@ -10,10 +10,10 @@ Changes applied to each of the 12 model notebooks:
   D  FocalLoss alpha = 0.75
   E  TARGET_POS_FRAC = 0.20
 
-Changes applied to Team505_Preprocessing.ipynb:
+Changes applied to Preprocessing.ipynb:
   Replace all manifest-generation cells with one markdown notice cell.
 
-Changes applied to Team505_EDA.ipynb:
+Changes applied to EDA.ipynb:
   Replace old split-loading cell with new train/val/test.csv loading.
 
 Run:
@@ -254,7 +254,7 @@ def patch_model_notebook(nb_path):
 
 
 # ─────────────────────────────────────────────────────────────
-# STEP 4 — Team505_Preprocessing.ipynb
+# STEP 4 — Preprocessing.ipynb
 # ─────────────────────────────────────────────────────────────
 
 PREPROCESSING_NOTICE_MD = (
@@ -280,7 +280,7 @@ OLD_MANIFEST_KEYWORDS = [
 
 # Cells to KEEP (by partial source match)
 KEEP_KEYWORDS = [
-    "# Team505",         # title markdown
+    "# ",         # title markdown
     "## 0 - Imports",    # imports cell — keep imports
     "## 1 - Load Master",
     "Load official NIH metadata",
@@ -324,7 +324,7 @@ def patch_preprocessing_notebook(nb_path):
 
 
 # ─────────────────────────────────────────────────────────────
-# STEP 5 — Team505_EDA.ipynb
+# STEP 5 — EDA.ipynb
 # ─────────────────────────────────────────────────────────────
 
 NEW_EDA_LOADING = """\
@@ -371,18 +371,18 @@ def patch_eda_notebook(nb_path):
 # ─────────────────────────────────────────────────────────────
 
 MODEL_NOTEBOOKS = [
-    "Ammar_Ahmed_DenseNet121.ipynb",
-    "Ammar_Ahmed_EfficientNetB3.ipynb",
-    "Ammar_Ahmed_ResNet50.ipynb",
-    "Hosam_Nabil_DenseNet201.ipynb",
-    "Hosam_Nabil_VGG16.ipynb",
-    "Hosam_Nabil_MobileNetV2.ipynb",
-    "Mohamed_Eslam_Xception.ipynb",
-    "Mohamed_Eslam_InceptionV3.ipynb",
-    "Mohamed_Eslam_ResNet101.ipynb",
-    "Abdelrahman_Mostafa_ViTB16.ipynb",
-    "Abdelrahman_Mostafa_SwinT.ipynb",
-    "Abdelrahman_Mostafa_DeiTS.ipynb",
+    "DenseNet121.ipynb",
+    "EfficientNetB3.ipynb",
+    "ResNet50.ipynb",
+    "DenseNet201.ipynb",
+    "VGG16.ipynb",
+    "MobileNetV2.ipynb",
+    "Xception.ipynb",
+    "InceptionV3.ipynb",
+    "ResNet101.ipynb",
+    "ViTB16.ipynb",
+    "SwinT.ipynb",
+    "DeiTS.ipynb",
 ]
 
 print("=" * 60)
@@ -397,11 +397,11 @@ for nb_name in MODEL_NOTEBOOKS:
         continue
     patch_model_notebook(nb_path)
 
-print("\n[STEP 4] Patching Team505_Preprocessing.ipynb ...")
-patch_preprocessing_notebook(NB_DIR / "Team505_Preprocessing.ipynb")
+print("\n[STEP 4] Patching Preprocessing.ipynb ...")
+patch_preprocessing_notebook(NB_DIR / "Preprocessing.ipynb")
 
-print("\n[STEP 5] Patching Team505_EDA.ipynb ...")
-patch_eda_notebook(NB_DIR / "Team505_EDA.ipynb")
+print("\n[STEP 5] Patching EDA.ipynb ...")
+patch_eda_notebook(NB_DIR / "EDA.ipynb")
 
 print("\n" + "=" * 60)
 print("ALL DONE.  Run scripts/rebuild_clean_splits.py next.")

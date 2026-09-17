@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 """
-run_xai_demo.py  -  Team505 XAI Pipeline Runner
+run_xai_demo.py  -  XAI Pipeline Runner
 
 Loads 12 trained model checkpoints, selects a shared evaluation subset
 (TP / TN / FP / FN) from the validation dataset, and generates 
 Grad-CAM (or Attention Rollout), LIME, SHAP, and Integrated
 Gradients explanations for each model.
 
-Outputs saved to:   outputs/<member>/[<model>]/xai/<method>/
+Outputs saved to:   outputs/models/<model>/xai/<method>/
 """
 
 import sys, os, time, gc, warnings
@@ -118,41 +118,41 @@ def _build_deits():
 # Model configs: (model_name, build_fn, m_type, ckpt_path, xai_dir)
 MODELS = [
     ("DenseNet121", _build_densenet121, "cnn",
-     PROJECT_ROOT / "outputs" / "Ammar_Ahmed" / "DenseNet121" / "best_model.pth",
-     PROJECT_ROOT / "outputs" / "Ammar_Ahmed" / "DenseNet121" / "xai"),
+     PROJECT_ROOT / "outputs" / "models" / "DenseNet121" / "best_model.pth",
+     PROJECT_ROOT / "outputs" / "models" / "DenseNet121" / "xai"),
     ("EfficientNetB3", _build_efficientnet_b3, "cnn",
-     PROJECT_ROOT / "outputs" / "Ammar_Ahmed" / "EfficientNetB3" / "best_model.pth",
-     PROJECT_ROOT / "outputs" / "Ammar_Ahmed" / "EfficientNetB3" / "xai"),
+     PROJECT_ROOT / "outputs" / "models" / "EfficientNetB3" / "best_model.pth",
+     PROJECT_ROOT / "outputs" / "models" / "EfficientNetB3" / "xai"),
     ("ResNet50", _build_resnet50, "cnn",
-     PROJECT_ROOT / "outputs" / "Ammar_Ahmed" / "ResNet50" / "best_model.pth",
-     PROJECT_ROOT / "outputs" / "Ammar_Ahmed" / "ResNet50" / "xai"),
+     PROJECT_ROOT / "outputs" / "models" / "ResNet50" / "best_model.pth",
+     PROJECT_ROOT / "outputs" / "models" / "ResNet50" / "xai"),
     ("DenseNet201", _build_densenet201, "cnn",
-     PROJECT_ROOT / "outputs" / "Hosam_Nabil" / "DenseNet201" / "best_model.pth",
-     PROJECT_ROOT / "outputs" / "Hosam_Nabil" / "DenseNet201" / "xai"),
+     PROJECT_ROOT / "outputs" / "models" / "DenseNet201" / "best_model.pth",
+     PROJECT_ROOT / "outputs" / "models" / "DenseNet201" / "xai"),
     ("VGG16", _build_vgg16, "cnn",
-     PROJECT_ROOT / "outputs" / "Hosam_Nabil" / "VGG16" / "best_model.pth",
-     PROJECT_ROOT / "outputs" / "Hosam_Nabil" / "VGG16" / "xai"),
+     PROJECT_ROOT / "outputs" / "models" / "VGG16" / "best_model.pth",
+     PROJECT_ROOT / "outputs" / "models" / "VGG16" / "xai"),
     ("MobileNetV2", _build_mobilenet_v2, "cnn",
-     PROJECT_ROOT / "outputs" / "Hosam_Nabil" / "MobileNetV2" / "best_model.pth",
-     PROJECT_ROOT / "outputs" / "Hosam_Nabil" / "MobileNetV2" / "xai"),
+     PROJECT_ROOT / "outputs" / "models" / "MobileNetV2" / "best_model.pth",
+     PROJECT_ROOT / "outputs" / "models" / "MobileNetV2" / "xai"),
     ("Xception", _build_xception, "cnn",
-     PROJECT_ROOT / "outputs" / "Mohamed_Eslam" / "Xception" / "best_model.pth",
-     PROJECT_ROOT / "outputs" / "Mohamed_Eslam" / "Xception" / "xai"),
+     PROJECT_ROOT / "outputs" / "models" / "Xception" / "best_model.pth",
+     PROJECT_ROOT / "outputs" / "models" / "Xception" / "xai"),
     ("InceptionV3", _build_inception_v3, "cnn",
-     PROJECT_ROOT / "outputs" / "Mohamed_Eslam" / "InceptionV3" / "best_model.pth",
-     PROJECT_ROOT / "outputs" / "Mohamed_Eslam" / "InceptionV3" / "xai"),
+     PROJECT_ROOT / "outputs" / "models" / "InceptionV3" / "best_model.pth",
+     PROJECT_ROOT / "outputs" / "models" / "InceptionV3" / "xai"),
     ("ResNet101", _build_resnet101, "cnn",
-     PROJECT_ROOT / "outputs" / "Mohamed_Eslam" / "ResNet101" / "best_model.pth",
-     PROJECT_ROOT / "outputs" / "Mohamed_Eslam" / "ResNet101" / "xai"),
+     PROJECT_ROOT / "outputs" / "models" / "ResNet101" / "best_model.pth",
+     PROJECT_ROOT / "outputs" / "models" / "ResNet101" / "xai"),
     ("ViTB16", _build_vit, "transformer",
-     PROJECT_ROOT / "outputs" / "Abdelrahman_Mostafa" / "ViTB16" / "best_model.pth",
-     PROJECT_ROOT / "outputs" / "Abdelrahman_Mostafa" / "ViTB16" / "xai"),
+     PROJECT_ROOT / "outputs" / "models" / "ViTB16" / "best_model.pth",
+     PROJECT_ROOT / "outputs" / "models" / "ViTB16" / "xai"),
     ("SwinT", _build_swint, "transformer",
-     PROJECT_ROOT / "outputs" / "Abdelrahman_Mostafa" / "SwinT" / "best_model.pth",
-     PROJECT_ROOT / "outputs" / "Abdelrahman_Mostafa" / "SwinT" / "xai"),
+     PROJECT_ROOT / "outputs" / "models" / "SwinT" / "best_model.pth",
+     PROJECT_ROOT / "outputs" / "models" / "SwinT" / "xai"),
     ("DeiTS", _build_deits, "transformer",
-     PROJECT_ROOT / "outputs" / "Abdelrahman_Mostafa" / "DeiTS" / "best_model.pth",
-     PROJECT_ROOT / "outputs" / "Abdelrahman_Mostafa" / "DeiTS" / "xai"),
+     PROJECT_ROOT / "outputs" / "models" / "DeiTS" / "best_model.pth",
+     PROJECT_ROOT / "outputs" / "models" / "DeiTS" / "xai"),
 ]
 
 # Number of images per category
@@ -218,7 +218,7 @@ def select_shared_subset(df_val, model, device, m_type, n=N_PER_CATEGORY):
 # ==============================================================================
 def main():
     print("=" * 70)
-    print("Team505 XAI Batch Pipeline")
+    print("XAI Batch Pipeline")
     print(f"Device: {DEVICE}")
     print("=" * 70)
 

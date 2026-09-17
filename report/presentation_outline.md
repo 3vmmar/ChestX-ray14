@@ -1,4 +1,4 @@
-# Presentation Outline — Team505 Phase 3
+# Presentation Outline
 ## DSAI 305 | Spring 2026 | 15–20 Minute Presentation
 
 ---
@@ -9,16 +9,9 @@
 > # Explainable Pneumonia Detection
 > ### A Comparison of 12 Deep Learning Models on NIH ChestX-ray14
 >
-> **Team 505 | DSAI 305 | Spring 2026**
->
-> | Member | ID |
-> |---|---|
-> | Ammar Ahmed | 202300877 |
-> | Hosam Nabil | 202202228 |
-> | Mohamed Eslam | 202201690 |
-> | Abdelrahman Mostafa | 202202298 |
+> **DSAI 305 | Spring 2026**
 
-**Speaker notes:** Good [morning/afternoon]. We are Team 505. Our project is a controlled comparison of 12 deep learning architectures for pneumonia detection on chest X-rays, with explainability analysis using four different methods. I will walk you through our problem, what we built, what we found, and what it means clinically in the next 15–18 minutes.
+**Speaker notes:** Good [morning/afternoon]. Our project is a controlled comparison of 12 deep learning architectures for pneumonia detection on chest X-rays, with explainability analysis using four different methods. I will walk you through our problem, what we built, what we found, and what it means clinically in the next 15–18 minutes.
 
 ---
 
