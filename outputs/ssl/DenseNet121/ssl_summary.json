@@ -1,0 +1,11 @@
+{
+  "model": "DenseNet121",
+  "epochs_completed": 1,
+  "images": 512,
+  "img_size": 224,
+  "batch_size": 16,
+  "temperature": 0.2,
+  "final_loss": 3.435413360595703,
+  "checkpoint": "outputs\\ssl\\DenseNet121\\ssl_backbone.pth",
+  "next_step": "python scripts/train_multilabel.py --init-from outputs\\ssl\\DenseNet121\\ssl_backbone.pth"
+}

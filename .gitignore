@@ -47,3 +47,7 @@ outputs/**/*.csv
 wandb/
 runs/
 
+
+# Full-dataset multilabel splits (regenerate with scripts/build_multilabel_splits.py)
+data/splits_multilabel/*.csv
+outputs/multilabel_train.log

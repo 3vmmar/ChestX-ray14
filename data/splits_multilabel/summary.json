@@ -1,0 +1,88 @@
+{
+  "seed": 42,
+  "source": "Data_Entry_2017.csv (full release)",
+  "findings": [
+    "Atelectasis",
+    "Cardiomegaly",
+    "Consolidation",
+    "Edema",
+    "Effusion",
+    "Emphysema",
+    "Fibrosis",
+    "Hernia",
+    "Infiltration",
+    "Mass",
+    "Nodule",
+    "Pleural_Thickening",
+    "Pneumonia",
+    "Pneumothorax"
+  ],
+  "splits": {
+    "train": {
+      "images": 78705,
+      "patients": 21563,
+      "pneumonia_positives": 1002,
+      "pneumonia_rate_%": 1.273,
+      "per_finding": {
+        "Atelectasis": 8041,
+        "Cardiomegaly": 1966,
+        "Consolidation": 3260,
+        "Edema": 1602,
+        "Effusion": 9276,
+        "Emphysema": 1760,
+        "Fibrosis": 1179,
+        "Hernia": 130,
+        "Infiltration": 13847,
+        "Mass": 4193,
+        "Nodule": 4430,
+        "Pleural_Thickening": 2389,
+        "Pneumonia": 1002,
+        "Pneumothorax": 3691
+      }
+    },
+    "val": {
+      "images": 16646,
+      "patients": 4621,
+      "pneumonia_positives": 218,
+      "pneumonia_rate_%": 1.31,
+      "per_finding": {
+        "Atelectasis": 1799,
+        "Cardiomegaly": 442,
+        "Consolidation": 709,
+        "Edema": 330,
+        "Effusion": 2157,
+        "Emphysema": 367,
+        "Fibrosis": 245,
+        "Hernia": 63,
+        "Infiltration": 3004,
+        "Mass": 876,
+        "Nodule": 1006,
+        "Pleural_Thickening": 494,
+        "Pneumonia": 218,
+        "Pneumothorax": 777
+      }
+    },
+    "test": {
+      "images": 16769,
+      "patients": 4621,
+      "pneumonia_positives": 211,
+      "pneumonia_rate_%": 1.258,
+      "per_finding": {
+        "Atelectasis": 1719,
+        "Cardiomegaly": 368,
+        "Consolidation": 698,
+        "Edema": 371,
+        "Effusion": 1884,
+        "Emphysema": 389,
+        "Fibrosis": 262,
+        "Hernia": 34,
+        "Infiltration": 3043,
+        "Mass": 713,
+        "Nodule": 895,
+        "Pleural_Thickening": 502,
+        "Pneumonia": 211,
+        "Pneumothorax": 834
+      }
+    }
+  }
+}
