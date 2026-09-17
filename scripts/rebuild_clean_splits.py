@@ -17,7 +17,7 @@ import pandas as pd
 
 # ------- PATHS -------
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-DATA_RAW     = PROJECT_ROOT / 'data' / 'raw'
+DATA_RAW     = PROJECT_ROOT / 'data' / 'archive'
 DATA_SPLITS  = PROJECT_ROOT / 'data' / 'splits'
 DATA_META    = PROJECT_ROOT / 'data' / 'metadata'
 NIH_META     = DATA_RAW / 'Data_Entry_2017.csv'
