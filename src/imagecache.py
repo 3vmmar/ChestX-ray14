@@ -55,7 +55,14 @@ def expected_bytes(n_images, size=CACHE_SIZE):
 
 
 class ImageCache:
-    """Read-only view over the cached array."""
+    """Read-only view over the cached array.
+
+    The memmap is opened LAZILY, per process, and deliberately excluded from
+    pickling. That matters: a np.memmap pickles by value, so handing this
+    object to N DataLoader workers under Windows spawn would try to copy the
+    whole 15.4 GB array N times and wedge the machine. Each worker instead
+    re-opens the same file, which the OS page cache shares between them.
+    """
 
     def __init__(self, size=CACHE_SIZE, cache_dir=CACHE_DIR):
         arr_path, idx_path = cache_paths(size, cache_dir)
@@ -65,13 +72,28 @@ class ImageCache:
                 f"build it with: python scripts/build_image_cache.py --size {size}")
         idx = pd.read_csv(idx_path)
         self.size = size
+        self.arr_path = arr_path
+        self.n_rows = len(idx)
         self.row_of = dict(zip(idx["image_name"], idx["row"]))
-        self.arr = np.load(arr_path, mmap_mode="r")
-        if self.arr.shape[0] != len(idx):
-            raise ValueError(f"cache/index mismatch: {self.arr.shape[0]} vs {len(idx)}")
+        self._arr = None  # opened on first use in whichever process needs it
+
+    @property
+    def arr(self):
+        if self._arr is None:
+            self._arr = np.load(self.arr_path, mmap_mode="r")
+            if self._arr.shape[0] != self.n_rows:
+                raise ValueError(
+                    f"cache/index mismatch: {self._arr.shape[0]} vs {self.n_rows}")
+        return self._arr
+
+    def __getstate__(self):
+        # never ship the memmap across a process boundary
+        s = self.__dict__.copy()
+        s["_arr"] = None
+        return s
 
     def __len__(self):
-        return self.arr.shape[0]
+        return self.n_rows
 
     def __contains__(self, image_name):
         return image_name in self.row_of
