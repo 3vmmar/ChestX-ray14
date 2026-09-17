@@ -1,0 +1,20 @@
+{
+  "model": "DenseNet121",
+  "evaluation": "LOCKED_TEST_TTA_5variants",
+  "threshold_source": "validation (frozen, not re-tuned on test)",
+  "threshold": 0.28,
+  "best_epoch": 20,
+  "test_roc_auc": 0.6022,
+  "test_pr_auc": 0.1409,
+  "test_f1": 0.1982,
+  "test_precision": 0.1184,
+  "test_recall": 0.61,
+  "test_tp": 147,
+  "test_fp": 1095,
+  "test_tn": 1282,
+  "test_fn": 94,
+  "val_roc_auc": 0.6325,
+  "val_pr_auc": 0.1086,
+  "val_f1": 0.1772,
+  "optimism_roc_auc": 0.0303
+}
