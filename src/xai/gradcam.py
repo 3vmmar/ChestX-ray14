@@ -91,19 +91,23 @@ class GradCAM:
             cam = cam.squeeze().cpu().numpy()
             # Remove CLS token if present, reshape to spatial grid
             num_patches = cam.shape[0]
-            if num_patches == 197:  # 14*14 + 1 CLS
-                cam = cam[1:]  # drop CLS
-                side = 14
+            grid_tokens = num_patches
+            if num_patches == 197:
+                grid_tokens = 196
+                cam = cam[1:]
             else:
                 side = int(np.sqrt(num_patches))
-                # If there's an extra CLS token
-                if side * side != num_patches and (num_patches - 1) == side * side:
+                if side * side == num_patches:
+                    grid_tokens = num_patches
+                elif (num_patches - 1) == side * side:
+                    grid_tokens = num_patches - 1
                     cam = cam[1:]
-                    # recalculate
-                elif side * side != num_patches:
+                else:
                     side = int(np.sqrt(num_patches - 1))
+                    grid_tokens = side * side
                     cam = cam[1:]
-            cam = cam.reshape(side, side)
+            side = int(np.sqrt(grid_tokens))
+            cam = cam[:grid_tokens].reshape(side, side)
             cam = np.maximum(cam, 0)
         else:
             raise ValueError(f"Unexpected gradient dimensions: {gradients.dim()}")
@@ -164,9 +168,15 @@ def get_target_layer(model, model_name):
 
 class AttentionRollout(GradCAM):
     """
-    Attention Rollout adaptation for Transformer models (ViT, Swin, DeiT).
-    Uses the GradCAM gradient-based localization on the final attention/norm block
-    to generate the spatial heatmap, acting as a robust rollout proxy.
+    Gradient-based attention map for Transformer models (ViT, Swin, DeiT).
+
+    Uses the GradCAM gradient-based localization on the final attention/norm
+    block to generate the spatial heatmap. For transformer models, this
+    approximates attention rollout by backpropagating through the final norm
+    layer, providing a spatially coherent explanation map.
+
+    This is not a true Attention Rollout (which averages attention matrices),
+    but rather a Grad-CAM variant adapted for transformer architectures.
     """
     pass
 

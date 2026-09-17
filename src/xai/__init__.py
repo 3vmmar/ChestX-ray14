@@ -1,10 +1,10 @@
 """
-XAI module for Team505 - Explainability methods for chest X-ray models.
+XAI module — Explainability methods for chest X-ray classification models.
 
 Available explainers:
     - GradCAM: Gradient-weighted Class Activation Mapping
     - LIMEExplainer: Local Interpretable Model-agnostic Explanations
-    - SHAPExplainer: SHapley Additive exPlanations (GradientExplainer)
+    - SHAPExplainer: SHapley Additive exPlanations (PartitionExplainer)
     - IGExplainer: Integrated Gradients (via Captum)
 """
 

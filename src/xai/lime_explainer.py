@@ -22,7 +22,7 @@ IMAGENET_STD = np.array([0.229, 0.224, 0.225])
 
 class LIMEExplainer:
     """
-    LIME explainer for binary classification chest X-ray models.
+    LIME explainer for multi-class chest X-ray classification.
 
     Parameters
     ----------
@@ -32,6 +32,8 @@ class LIMEExplainer:
         Device to run inference on.
     img_size : int
         Expected input image size (default 224).
+    num_classes : int
+        Number of output classes (default 14).
     """
 
     def __init__(self, model, device, img_size=224):
@@ -53,27 +55,23 @@ class LIMEExplainer:
         Returns
         -------
         probs : np.ndarray
-            Array of shape (N, 2) with [P(neg), P(pos)] for each image.
+            Array of shape (N, num_classes) with probabilities for each class.
         """
         batch = []
         for img in images_np:
-            # Normalize
             img_norm = (img - IMAGENET_MEAN) / IMAGENET_STD
-            # HWC -> CHW
             tensor = torch.from_numpy(img_norm.transpose(2, 0, 1)).float()
             batch.append(tensor)
 
         batch_tensor = torch.stack(batch).to(self.device)
 
         with torch.no_grad():
-            logits = self.model(batch_tensor).squeeze(-1)
-            pos_probs = torch.sigmoid(logits).cpu().numpy()
+            logits = self.model(batch_tensor)
+            probs = torch.softmax(logits, dim=1).cpu().numpy()
 
-        # LIME expects (N, num_classes) - binary: [P(neg), P(pos)]
-        neg_probs = 1.0 - pos_probs
-        return np.column_stack([neg_probs, pos_probs])
+        return probs
 
-    def explain(self, image_np, num_samples=300, num_features=10):
+    def explain(self, image_np, num_samples=300, num_features=10, top_labels=5):
         """
         Generate LIME explanation.
 
@@ -85,6 +83,8 @@ class LIMEExplainer:
             Number of perturbed samples for LIME.
         num_features : int
             Number of superpixel features to select.
+        top_labels : int
+            Number of top labels to explain.
 
         Returns
         -------
@@ -94,7 +94,7 @@ class LIMEExplainer:
         explanation = self.explainer.explain_instance(
             image_np.astype(np.double),
             self._batch_predict,
-            top_labels=2,
+            top_labels=top_labels,
             hide_color=0,
             num_samples=num_samples,
             num_features=num_features,
@@ -115,7 +115,7 @@ def save_lime(image_np, explanation, save_path, title="LIME", label=1):
     save_path : str or Path
     title : str
     label : int
-        Class label to explain (1=Pneumonia).
+        Class label to explain.
     """
     # Positive-only mask
     temp_pos, mask_pos = explanation.get_image_and_mask(

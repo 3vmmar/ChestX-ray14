@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 """
-run_xai_demo.py  -  Team505 XAI Pipeline Runner
+run_xai_demo.py — XAI Pipeline Runner (multi-class)
 
 Loads 12 trained model checkpoints, selects a shared evaluation subset
-(TP / TN / FP / FN) from the validation dataset, and generates 
+(correct / incorrect predictions) from the validation dataset, and generates 
 Grad-CAM (or Attention Rollout), LIME, SHAP, and Integrated
 Gradients explanations for each model.
 
-Outputs saved to:   outputs/<member>/[<model>]/xai/<method>/
+Outputs saved to:   outputs/models/<model>/xai/<method>/
 """
 
 import sys, os, time, gc, warnings
@@ -59,100 +59,100 @@ val_transform = transforms.Compose([
 # ==============================================================================
 def _build_densenet121():
     model = models.densenet121(weights=None)
-    model.classifier = nn.Sequential(nn.Dropout(p=0.6), nn.Linear(model.classifier.in_features, 1))
+    model.classifier = nn.Sequential(nn.Dropout(p=0.6), nn.Linear(model.classifier.in_features, 14))
     return model
 
 def _build_efficientnet_b3():
     model = models.efficientnet_b3(weights=None)
-    model.classifier = nn.Sequential(nn.Dropout(p=0.6), nn.Linear(model.classifier[1].in_features, 1))
+    model.classifier = nn.Sequential(nn.Dropout(p=0.6), nn.Linear(model.classifier[1].in_features, 14))
     return model
 
 def _build_resnet50():
     model = models.resnet50(weights=None)
-    model.fc = nn.Sequential(nn.Dropout(p=0.6), nn.Linear(model.fc.in_features, 1))
+    model.fc = nn.Sequential(nn.Dropout(p=0.6), nn.Linear(model.fc.in_features, 14))
     return model
 
 def _build_densenet201():
     model = models.densenet201(weights=None)
-    model.classifier = nn.Sequential(nn.Dropout(p=0.6), nn.Linear(model.classifier.in_features, 1))
+    model.classifier = nn.Sequential(nn.Dropout(p=0.6), nn.Linear(model.classifier.in_features, 14))
     return model
 
 def _build_vgg16():
     model = models.vgg16(weights=None)
-    model.classifier[6] = nn.Sequential(nn.Dropout(p=0.6), nn.Linear(model.classifier[6].in_features, 1))
+    model.classifier[6] = nn.Sequential(nn.Dropout(p=0.6), nn.Linear(model.classifier[6].in_features, 14))
     return model
 
 def _build_mobilenet_v2():
     model = models.mobilenet_v2(weights=None)
-    model.classifier = nn.Sequential(nn.Dropout(p=0.6), nn.Linear(model.classifier[1].in_features, 1))
+    model.classifier = nn.Sequential(nn.Dropout(p=0.6), nn.Linear(model.classifier[1].in_features, 14))
     return model
 
 def _build_xception():
-    model = timm.create_model("legacy_xception", pretrained=False)
-    model.fc = nn.Sequential(nn.Dropout(p=0.6), nn.Linear(model.fc.in_features, 1))
+    model = timm.create_model("legacy_xception", pretrained=False, num_classes=14)
+    model.fc = nn.Sequential(nn.Dropout(p=0.6), nn.Linear(model.fc.in_features, 14))
     return model
 
 def _build_inception_v3():
     model = models.inception_v3(weights=None, aux_logits=True)
-    model.fc = nn.Sequential(nn.Dropout(p=0.6), nn.Linear(model.fc.in_features, 1))
+    model.fc = nn.Sequential(nn.Dropout(p=0.6), nn.Linear(model.fc.in_features, 14))
     return model
 
 def _build_resnet101():
     model = models.resnet101(weights=None)
-    model.fc = nn.Sequential(nn.Dropout(p=0.6), nn.Linear(model.fc.in_features, 1))
+    model.fc = nn.Sequential(nn.Dropout(p=0.6), nn.Linear(model.fc.in_features, 14))
     return model
 
 def _build_vit():
     model = models.vit_b_16(weights=None)
-    model.heads.head = nn.Sequential(nn.Dropout(p=0.6), nn.Linear(model.heads.head.in_features, 1))
+    model.heads.head = nn.Sequential(nn.Dropout(p=0.6), nn.Linear(model.heads.head.in_features, 14))
     return model
 
 def _build_swint():
-    model = timm.create_model("swin_tiny_patch4_window7_224", pretrained=False, num_classes=1, drop_rate=0.6)
+    model = timm.create_model("swin_tiny_patch4_window7_224", pretrained=False, num_classes=14, drop_rate=0.6)
     return model
 
 def _build_deits():
-    model = timm.create_model("deit_small_patch16_224", pretrained=False, num_classes=1, drop_rate=0.6)
+    model = timm.create_model("deit_small_patch16_224", pretrained=False, num_classes=14, drop_rate=0.6)
     return model
 
 # Model configs: (model_name, build_fn, m_type, ckpt_path, xai_dir)
 MODELS = [
     ("DenseNet121", _build_densenet121, "cnn",
-     PROJECT_ROOT / "outputs" / "Ammar_Ahmed" / "DenseNet121" / "best_model.pth",
-     PROJECT_ROOT / "outputs" / "Ammar_Ahmed" / "DenseNet121" / "xai"),
+     PROJECT_ROOT / "outputs" / "DenseNet121" / "best_model.pth",
+     PROJECT_ROOT / "outputs" / "DenseNet121" / "xai"),
     ("EfficientNetB3", _build_efficientnet_b3, "cnn",
-     PROJECT_ROOT / "outputs" / "Ammar_Ahmed" / "EfficientNetB3" / "best_model.pth",
-     PROJECT_ROOT / "outputs" / "Ammar_Ahmed" / "EfficientNetB3" / "xai"),
+     PROJECT_ROOT / "outputs" / "EfficientNetB3" / "best_model.pth",
+     PROJECT_ROOT / "outputs" / "EfficientNetB3" / "xai"),
     ("ResNet50", _build_resnet50, "cnn",
-     PROJECT_ROOT / "outputs" / "Ammar_Ahmed" / "ResNet50" / "best_model.pth",
-     PROJECT_ROOT / "outputs" / "Ammar_Ahmed" / "ResNet50" / "xai"),
+     PROJECT_ROOT / "outputs" / "ResNet50" / "best_model.pth",
+     PROJECT_ROOT / "outputs" / "ResNet50" / "xai"),
     ("DenseNet201", _build_densenet201, "cnn",
-     PROJECT_ROOT / "outputs" / "Hosam_Nabil" / "DenseNet201" / "best_model.pth",
-     PROJECT_ROOT / "outputs" / "Hosam_Nabil" / "DenseNet201" / "xai"),
+     PROJECT_ROOT / "outputs" / "DenseNet201" / "best_model.pth",
+     PROJECT_ROOT / "outputs" / "DenseNet201" / "xai"),
     ("VGG16", _build_vgg16, "cnn",
-     PROJECT_ROOT / "outputs" / "Hosam_Nabil" / "VGG16" / "best_model.pth",
-     PROJECT_ROOT / "outputs" / "Hosam_Nabil" / "VGG16" / "xai"),
+     PROJECT_ROOT / "outputs" / "VGG16" / "best_model.pth",
+     PROJECT_ROOT / "outputs" / "VGG16" / "xai"),
     ("MobileNetV2", _build_mobilenet_v2, "cnn",
-     PROJECT_ROOT / "outputs" / "Hosam_Nabil" / "MobileNetV2" / "best_model.pth",
-     PROJECT_ROOT / "outputs" / "Hosam_Nabil" / "MobileNetV2" / "xai"),
+     PROJECT_ROOT / "outputs" / "MobileNetV2" / "best_model.pth",
+     PROJECT_ROOT / "outputs" / "MobileNetV2" / "xai"),
     ("Xception", _build_xception, "cnn",
-     PROJECT_ROOT / "outputs" / "Mohamed_Eslam" / "Xception" / "best_model.pth",
-     PROJECT_ROOT / "outputs" / "Mohamed_Eslam" / "Xception" / "xai"),
+     PROJECT_ROOT / "outputs" / "Xception" / "best_model.pth",
+     PROJECT_ROOT / "outputs" / "Xception" / "xai"),
     ("InceptionV3", _build_inception_v3, "cnn",
-     PROJECT_ROOT / "outputs" / "Mohamed_Eslam" / "InceptionV3" / "best_model.pth",
-     PROJECT_ROOT / "outputs" / "Mohamed_Eslam" / "InceptionV3" / "xai"),
+     PROJECT_ROOT / "outputs" / "InceptionV3" / "best_model.pth",
+     PROJECT_ROOT / "outputs" / "InceptionV3" / "xai"),
     ("ResNet101", _build_resnet101, "cnn",
-     PROJECT_ROOT / "outputs" / "Mohamed_Eslam" / "ResNet101" / "best_model.pth",
-     PROJECT_ROOT / "outputs" / "Mohamed_Eslam" / "ResNet101" / "xai"),
+     PROJECT_ROOT / "outputs" / "ResNet101" / "best_model.pth",
+     PROJECT_ROOT / "outputs" / "ResNet101" / "xai"),
     ("ViTB16", _build_vit, "transformer",
-     PROJECT_ROOT / "outputs" / "Abdelrahman_Mostafa" / "ViTB16" / "best_model.pth",
-     PROJECT_ROOT / "outputs" / "Abdelrahman_Mostafa" / "ViTB16" / "xai"),
+     PROJECT_ROOT / "outputs" / "ViTB16" / "best_model.pth",
+     PROJECT_ROOT / "outputs" / "ViTB16" / "xai"),
     ("SwinT", _build_swint, "transformer",
-     PROJECT_ROOT / "outputs" / "Abdelrahman_Mostafa" / "SwinT" / "best_model.pth",
-     PROJECT_ROOT / "outputs" / "Abdelrahman_Mostafa" / "SwinT" / "xai"),
+     PROJECT_ROOT / "outputs" / "SwinT" / "best_model.pth",
+     PROJECT_ROOT / "outputs" / "SwinT" / "xai"),
     ("DeiTS", _build_deits, "transformer",
-     PROJECT_ROOT / "outputs" / "Abdelrahman_Mostafa" / "DeiTS" / "best_model.pth",
-     PROJECT_ROOT / "outputs" / "Abdelrahman_Mostafa" / "DeiTS" / "xai"),
+     PROJECT_ROOT / "outputs" / "DeiTS" / "best_model.pth",
+     PROJECT_ROOT / "outputs" / "DeiTS" / "xai"),
 ]
 
 # Number of images per category
@@ -168,22 +168,22 @@ def load_image(path):
     tensor = val_transform(img_resized).unsqueeze(0)
     return img_resized, img_np, tensor
 
-def predict_with_model(model, tensor, device, threshold):
+def predict_with_model(model, tensor, device):
     model.eval()
     with torch.no_grad():
-        logit = model(tensor.to(device)).squeeze()
-        prob = torch.sigmoid(logit).item()
-        pred = int(prob >= threshold)
-    return prob, pred
+        logits = model(tensor.to(device)).squeeze(0)
+        probs = torch.softmax(logits, dim=0)
+        pred_class = int(probs.argmax().item())
+        confidence = float(probs[pred_class].item())
+    return pred_class, confidence, probs.cpu().numpy()
 
-def select_shared_subset(df_val, model, device, m_type, n=N_PER_CATEGORY):
-    threshold = 0.40 if m_type == "cnn" else 0.48
-    categories = {"TP": [], "TN": [], "FP": [], "FN": []}
-    needed = n * 4
+def select_shared_subset(df_val, model, device, n=N_PER_CATEGORY):
+    categories = {"correct": [], "incorrect": []}
+    needed = n * 2
 
     for _, row in df_val.iterrows():
         img_path = row["image_path"]
-        label = int(row["target_pneumonia"])
+        label = int(row["label"])
 
         if not Path(img_path).exists():
             continue
@@ -193,19 +193,15 @@ def select_shared_subset(df_val, model, device, m_type, n=N_PER_CATEGORY):
         except Exception:
             continue
 
-        prob, pred = predict_with_model(model, tensor, device, threshold)
+        pred_class, confidence, _ = predict_with_model(model, tensor, device)
 
-        if label == 1 and pred == 1:
-            cat = "TP"
-        elif label == 0 and pred == 0:
-            cat = "TN"
-        elif label == 0 and pred == 1:
-            cat = "FP"
-        elif label == 1 and pred == 0:
-            cat = "FN"
+        if pred_class == label:
+            cat = "correct"
+        else:
+            cat = "incorrect"
 
         if len(categories[cat]) < n:
-            categories[cat].append((img_path, label, prob))
+            categories[cat].append((img_path, label, confidence, pred_class))
 
         if sum(len(v) for v in categories.values()) >= needed:
             break
@@ -218,7 +214,7 @@ def select_shared_subset(df_val, model, device, m_type, n=N_PER_CATEGORY):
 # ==============================================================================
 def main():
     print("=" * 70)
-    print("Team505 XAI Batch Pipeline")
+    print("XAI Batch Pipeline")
     print(f"Device: {DEVICE}")
     print("=" * 70)
 
@@ -228,9 +224,8 @@ def main():
         return
     
     df_val = pd.read_csv(val_csv)
-    if 'target_pneumonia' not in df_val.columns and 'label' in df_val.columns:
-        df_val['target_pneumonia'] = df_val['label']
-    print(f"Validation set: {len(df_val)} images")
+    df_val['label'] = df_val['label'].astype(int)
+    print(f"Validation set: {len(df_val)} images | {df_val['label'].nunique()} classes")
 
     for model_name, build_fn, m_type, ckpt_path, xai_dir in MODELS:
         print(f"\n{'='*70}")
@@ -243,14 +238,14 @@ def main():
 
         # Build and load model
         model = build_fn()
-        ckpt = torch.load(ckpt_path, map_location=DEVICE, weights_only=True)
+        ckpt = torch.load(ckpt_path, map_location=DEVICE, weights_only=False)
         model.load_state_dict(ckpt["model_state_dict"])
         model = model.to(DEVICE)
         model.eval()
 
-        # Select evaluation subset based on threshold rules
-        print(f"  Selecting subset (Threshold = {0.40 if m_type == 'cnn' else 0.48})...")
-        subset = select_shared_subset(df_val, model, DEVICE, m_type)
+        # Select evaluation subset
+        print(f"  Selecting subset...")
+        subset = select_shared_subset(df_val, model, DEVICE)
         
         # Create output dirs safely
         for method in ["gradcam", "lime", "shap", "integrated_gradients"]:
@@ -269,12 +264,12 @@ def main():
                 cam_obj = GradCAM(model, target_layer)
                 
             for cat, items in subset.items():
-                for i, (img_path, label, prob) in enumerate(items, start=1):
+                for i, (img_path, label, confidence, pred_class) in enumerate(items, start=1):
                     _, img_np, tensor = load_image(img_path)
                     tensor = tensor.to(DEVICE)
                     tensor.requires_grad_(True)
-                    heatmap = cam_obj.generate(tensor)
-                    title = f"{cam_method} | {model_name} | {cat} (p={prob:.2f})"
+                    heatmap = cam_obj.generate(tensor, class_idx=pred_class)
+                    title = f"{cam_method} | {model_name} | {cat} (pred={pred_class}, conf={confidence:.2f})"
                     fname = f"{prefix}_{cat}_{i:02d}.png"
                     save_gradcam(
                         (img_np * 255).astype(np.uint8), heatmap,
@@ -290,14 +285,14 @@ def main():
         try:
             lime_exp = LIMEExplainer(model, DEVICE)
             for cat, items in subset.items():
-                for i, (img_path, label, prob) in enumerate(items, start=1):
+                for i, (img_path, label, confidence, pred_class) in enumerate(items, start=1):
                     _, img_np, tensor = load_image(img_path)
-                    explanation = lime_exp.explain(img_np, num_samples=200)
-                    title = f"LIME | {model_name} | {cat} (p={prob:.2f})"
+                    explanation = lime_exp.explain(img_np, num_samples=200, top_labels=5)
+                    title = f"LIME | {model_name} | {cat} (pred={pred_class}, conf={confidence:.2f})"
                     fname = f"{prefix}_{cat}_{i:02d}.png"
                     save_lime(
                         img_np, explanation,
-                        xai_dir / "lime" / fname, title=title,
+                        xai_dir / "lime" / fname, title=title, label=pred_class,
                     )
             print("    [OK] LIME done")
         except Exception as e:
@@ -308,10 +303,10 @@ def main():
         try:
             shap_exp = SHAPExplainer(model, DEVICE, max_evals=300)
             for cat, items in subset.items():
-                for i, (img_path, label, prob) in enumerate(items, start=1):
+                for i, (img_path, label, confidence, pred_class) in enumerate(items, start=1):
                     _, img_np, tensor = load_image(img_path)
-                    shap_vals = shap_exp.explain(img_np)
-                    title = f"SHAP | {model_name} | {cat} (p={prob:.2f})"
+                    shap_vals = shap_exp.explain(img_np, class_idx=pred_class)
+                    title = f"SHAP | {model_name} | {cat} (pred={pred_class}, conf={confidence:.2f})"
                     fname = f"{prefix}_{cat}_{i:02d}.png"
                     save_shap(
                         img_np, shap_vals,
@@ -326,10 +321,10 @@ def main():
         try:
             ig_exp = IGExplainer(model, DEVICE, n_steps=50)
             for cat, items in subset.items():
-                for i, (img_path, label, prob) in enumerate(items, start=1):
+                for i, (img_path, label, confidence, pred_class) in enumerate(items, start=1):
                     _, img_np, tensor = load_image(img_path)
-                    attr = ig_exp.explain(tensor)
-                    title = f"IG | {model_name} | {cat} (p={prob:.2f})"
+                    attr = ig_exp.explain(tensor, target=pred_class)
+                    title = f"IG | {model_name} | {cat} (pred={pred_class}, conf={confidence:.2f})"
                     fname = f"{prefix}_{cat}_{i:02d}.png"
                     save_ig(
                         img_np, attr,

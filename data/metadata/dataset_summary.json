@@ -1,5 +1,6 @@
 {
     "strategy": "NIH-only, capped per class, patient-wise 70/15/15",
+    "task": "multi-class lung disease classification",
     "cap_per_class": 1431,
     "classes_kept": [
         "Atelectasis",
@@ -20,17 +21,72 @@
         "Hernia",
         "Pleural_Thickening"
     ],
-    "train_total": 11943,
-    "train_pos": 1004,
-    "train_neg": 10939,
-    "train_pos_rate": 0.0841,
-    "val_total": 2611,
-    "val_pos": 186,
-    "val_neg": 2425,
-    "val_pos_rate": 0.0712,
-    "test_total": 2618,
-    "test_pos": 241,
-    "test_neg": 2377,
-    "test_pos_rate": 0.0921,
-    "seed": 42
+    "class_to_label": {
+        "Atelectasis": 0,
+        "Cardiomegaly": 1,
+        "Consolidation": 2,
+        "Edema": 3,
+        "Effusion": 4,
+        "Emphysema": 5,
+        "Infiltration": 6,
+        "Mass": 7,
+        "No Finding": 8,
+        "Nodule": 9,
+        "Pneumonia": 10,
+        "Pneumothorax": 11
+    },
+    "seed": 42,
+    "splits": {
+        "train": {
+            "total": 11943,
+            "per_class": {
+                "Atelectasis": 997,
+                "Cardiomegaly": 1046,
+                "Consolidation": 978,
+                "Edema": 1023,
+                "Effusion": 999,
+                "Emphysema": 987,
+                "Infiltration": 992,
+                "Mass": 954,
+                "No Finding": 1004,
+                "Nodule": 1003,
+                "Pneumonia": 1004,
+                "Pneumothorax": 956
+            }
+        },
+        "val": {
+            "total": 2611,
+            "per_class": {
+                "Atelectasis": 214,
+                "Cardiomegaly": 195,
+                "Consolidation": 226,
+                "Edema": 215,
+                "Effusion": 217,
+                "Emphysema": 225,
+                "Infiltration": 204,
+                "Mass": 264,
+                "No Finding": 211,
+                "Nodule": 194,
+                "Pneumonia": 186,
+                "Pneumothorax": 260
+            }
+        },
+        "test": {
+            "total": 2618,
+            "per_class": {
+                "Atelectasis": 220,
+                "Cardiomegaly": 190,
+                "Consolidation": 227,
+                "Edema": 193,
+                "Effusion": 215,
+                "Emphysema": 219,
+                "Infiltration": 235,
+                "Mass": 213,
+                "No Finding": 216,
+                "Nodule": 234,
+                "Pneumonia": 241,
+                "Pneumothorax": 215
+            }
+        }
+    }
 }

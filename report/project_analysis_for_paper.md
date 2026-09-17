@@ -1,7 +1,7 @@
-# Comprehensive Project Analysis Report — Team505 Phase 3
+# Comprehensive Project Analysis Report
 ## Explainable Pneumonia Detection on ChestX-ray14
 
-This document synthesizes the empirical results, training methodologies, and analytical findings from Phase 3 of the Team505 Pneumonia Detection project. It is intended to serve as the master technical reference document for drafting the final academic research paper.
+This document synthesizes the empirical results, training methodologies, and analytical findings from the Pneumonia Detection project. It is intended to serve as the master technical reference document for drafting the final academic research paper.
 
 ---
 
@@ -25,7 +25,7 @@ To construct a realistic but computationally tractable dataset:
 
 ## 2. Training Strategy & Optimization
 
-The Phase 3 training pipeline was heavily hardened to overcome the dataset's inherent challenges (severe 13:1 class imbalance and estimated 30–40% label noise on the Pneumonia class).
+The training pipeline was heavily hardened to overcome the dataset's inherent challenges (severe 13:1 class imbalance and estimated 30–40% label noise on the Pneumonia class).
 
 ### 2.1 Handling Class Imbalance
 Initial experiments utilizing overlapping imbalance treatments (WeightedRandomSampler combined with positive class weighting) resulted in severe over-correction and decision threshold collapse. The finalized pipeline employed a **single-method approach** using **Focal Loss**. By down-weighting the loss contribution from easily classified negative examples, Focal Loss successfully calibrated the models without collapsing the classification threshold.

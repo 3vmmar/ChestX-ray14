@@ -1,0 +1,12 @@
+{
+  "model": "DenseNet121",
+  "evaluation": "TTA_5variants",
+  "best_epoch": 21,
+  "tta_roc_auc": 0.7932,
+  "tta_pr_auc": 0.3154,
+  "tta_f1": 0.0,
+  "tta_threshold": 0.5,
+  "tta_precision": 0.3562,
+  "tta_recall": 0.3484,
+  "tta_accuracy": 0.3501
+}

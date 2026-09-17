@@ -1,5 +1,4 @@
-# Ethical and Legal Considerations — Team505 Phase 3
-## DSAI 305 | Spring 2026
+# Ethical and Legal Considerations
 
 ---
 
@@ -76,7 +75,7 @@
 
 **Limitations disclosed:** We explicitly document label noise (~30–40% on Pneumonia class), class imbalance (13:1), domain shift failure with external data, absence of subgroup fairness analysis, and the fact that our best model misses 34–78% of positive cases depending on threshold choice. We do not overstate performance.
 
-**Research framing:** Our system is clearly framed as an academic research project under DSAI 305. It is not presented as a clinical product. All claims are qualified with the evaluation dataset and methodology.
+**Research framing:** Our system is clearly framed as an academic research project. It is not presented as a clinical product. All claims are qualified with the evaluation dataset and methodology.
 
 ---
 

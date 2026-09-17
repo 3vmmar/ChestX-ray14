@@ -1,16 +1,4 @@
 # Explainable Pneumonia Detection on ChestX-ray14
-## DSAI 305 | Spring 2026 | Final Submission
-**GitHub:** https://github.com/3vmmar/ChestX-ray14
-
----
-
-## Team Members
-| Member | Student ID | Models |
-|---|---|---|
-| Ammar Ahmed | 202300877 | DenseNet-121, EfficientNet-B3, ResNet-50 |
-| Hosam Nabil | 202202228 | DenseNet-201, VGG-16, MobileNet-V2 |
-| Mohamed Eslam | 202201690 | Xception, InceptionV3, ResNet-101 |
-| Abdelrahman Mostafa | 202202298 | ViT-B/16, Swin-T, DeiT-S |
 
 ---
 
@@ -33,14 +21,16 @@
 ├── data/
 │   ├── splits/          ← train/val/test CSVs
 │   ├── metadata/        ← dataset_summary.json, master_registry.csv
-│   ├── raw/             ← NIH images + Data_Entry_2017.csv
-│   └── external/        ← pneumonia_1, pneumonia_2
-├── figures/             ← generated plots and EDA visualisations
+│   └── archive/         ← NIH images + Data_Entry_2017.csv
 ├── notebooks/           ← 12 model notebooks + EDA + Preprocessing
-├── outputs/             ← best_model.pth, metrics, XAI images per member
+├── outputs/
+│   ├── models/          ← best_model.pth, metrics, XAI images per model
+│   ├── eda/             ← EDA visualisations
+│   └── preprocessing/   ← preprocessing outputs
 ├── report/              ← all documentation files
 ├── scripts/
 │   ├── rebuild_clean_splits.py
+│   ├── patch_notebooks.py
 │   └── run_xai_demo.py
 ├── src/
 │   └── xai/             ← gradcam.py, lime_explainer.py, shap_explainer.py, integrated_gradients.py
@@ -83,20 +73,20 @@ python scripts/run_xai_demo.py
 **Evaluation:** TTA with 5 variants on val.csv (2,611 rows, 186 positives)
 TTA variants: original, horizontal flip, +7° rotation, -7° rotation, brightness+0.15
 
-| Rank | Model | Member | Params | AUC | PR-AUC | F1 | Precision | Recall | Threshold | Best Epoch |
-|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | ResNet-101 | Mohamed | 44.5M | 0.6747 | 0.1248 | 0.2088 | 0.1437 | 0.3817 | 0.41 | 9 |
-| 2 | EfficientNet-B3 | Ammar | 12.2M | 0.6740 | 0.1217 | 0.2198 | 0.1375 | 0.5484 | 0.41 | 29 |
-| 3 | MobileNet-V2 | Hosam | 3.4M | 0.6676 | 0.1218 | 0.2062 | 0.1229 | 0.6398 | 0.37 | 22 |
-| 4 | InceptionV3 | Mohamed | 23.8M | 0.6647 | 0.1344 | 0.2056 | 0.1708 | 0.2581 | 0.46 | 15 |
-| 5 | Xception | Mohamed | 20.8M | 0.6633 | 0.1160 | 0.2005 | 0.1280 | 0.4624 | 0.31 | 19 |
-| 6 | DenseNet-201 | Hosam | 18.1M | 0.6599 | 0.1186 | 0.2055 | 0.1361 | 0.4194 | 0.42 | 12 |
-| 7 | DenseNet-121 | Ammar | 6.95M | 0.6572 | 0.1230 | 0.2014 | 0.1818 | 0.2258 | 0.38 | 40 |
-| 8 | ResNet-50 | Ammar | 25.6M | 0.6570 | 0.1216 | 0.2072 | 0.1311 | 0.4946 | 0.35 | 12 |
-| 9 | VGG-16 | Hosam | 138M | 0.6517 | 0.1126 | 0.2024 | 0.1218 | 0.5968 | 0.35 | 16 |
-| 10 | DeiT-S | Abdelrahman | 22M | 0.6463 | 0.1099 | 0.1931 | 0.1342 | 0.3441 | 0.43 | 14 |
-| 11 | Swin-T | Abdelrahman | 28M | 0.6451 | 0.1095 | 0.2006 | 0.1227 | 0.5484 | 0.42 | 15 |
-| 12 | ViT-B/16 | Abdelrahman | 85.8M | 0.6246 | 0.1054 | 0.1845 | 0.1153 | 0.4624 | 0.48 | 13 |
+| Rank | Model | Params | AUC | PR-AUC | F1 | Precision | Recall | Threshold | Best Epoch |
+|---|---|---|---|---|---|---|---|---|---|
+| 1 | ResNet-101 | 44.5M | 0.6747 | 0.1248 | 0.2088 | 0.1437 | 0.3817 | 0.41 | 9 |
+| 2 | EfficientNet-B3 | 12.2M | 0.6740 | 0.1217 | 0.2198 | 0.1375 | 0.5484 | 0.41 | 29 |
+| 3 | MobileNet-V2 | 3.4M | 0.6676 | 0.1218 | 0.2062 | 0.1229 | 0.6398 | 0.37 | 22 |
+| 4 | InceptionV3 | 23.8M | 0.6647 | 0.1344 | 0.2056 | 0.1708 | 0.2581 | 0.46 | 15 |
+| 5 | Xception | 20.8M | 0.6633 | 0.1160 | 0.2005 | 0.1280 | 0.4624 | 0.31 | 19 |
+| 6 | DenseNet-201 | 18.1M | 0.6599 | 0.1186 | 0.2055 | 0.1361 | 0.4194 | 0.42 | 12 |
+| 7 | DenseNet-121 | 6.95M | 0.6572 | 0.1230 | 0.2014 | 0.1818 | 0.2258 | 0.38 | 40 |
+| 8 | ResNet-50 | 25.6M | 0.6570 | 0.1216 | 0.2072 | 0.1311 | 0.4946 | 0.35 | 12 |
+| 9 | VGG-16 | 138M | 0.6517 | 0.1126 | 0.2024 | 0.1218 | 0.5968 | 0.35 | 16 |
+| 10 | DeiT-S | 22M | 0.6463 | 0.1099 | 0.1931 | 0.1342 | 0.3441 | 0.43 | 14 |
+| 11 | Swin-T | 28M | 0.6451 | 0.1095 | 0.2006 | 0.1227 | 0.5484 | 0.42 | 15 |
+| 12 | ViT-B/16 | 85.8M | 0.6246 | 0.1054 | 0.1845 | 0.1153 | 0.4624 | 0.48 | 13 |
 
 ---
 
@@ -108,7 +98,7 @@ TTA variants: original, horizontal flip, +7° rotation, -7° rotation, brightnes
 | SHAP | Shapley value attribution | High | ✅ | ✅ |
 | Integrated Gradients | Path-integration | High | ✅ | ✅ |
 
-XAI outputs: `outputs/<member>/<model>/xai/<method>/`
+XAI outputs: `outputs/models/<model>/xai/<method>/`
 8 images per method per model (2×TP, 2×TN, 2×FP, 2×FN)
 
 ---

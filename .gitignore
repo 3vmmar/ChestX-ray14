@@ -29,9 +29,8 @@ Thumbs.db
 *.safetensors
 
 # Large data files (images not tracked)
-data/raw/
+data/archive/
 data/images/
-data/external/
 *.tar.gz
 *.zip
 

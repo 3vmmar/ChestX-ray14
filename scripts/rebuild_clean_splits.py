@@ -1,10 +1,10 @@
 """
 rebuild_clean_splits.py
 =======================
-NIH ChestX-ray14 — binary pneumonia detection data pipeline.
+NIH ChestX-ray14 — multi-class lung disease classification pipeline.
 
-Strategy : NIH-only, 14 classes capped at 1431 samples each,
-           patient-wise 70 / 15 / 15 split.
+Strategy : NIH-only, keep all 14 disease classes (excl. Hernia),
+           capped at 1431 samples each, patient-wise 70 / 15 / 15 split.
 
 Run once before training any model:
     python scripts/rebuild_clean_splits.py
@@ -17,19 +17,18 @@ import pandas as pd
 
 # ------- PATHS -------
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-DATA_RAW     = PROJECT_ROOT / 'data' / 'raw'
+DATA_RAW     = PROJECT_ROOT / 'data' / 'archive'
 DATA_SPLITS  = PROJECT_ROOT / 'data' / 'splits'
 DATA_META    = PROJECT_ROOT / 'data' / 'metadata'
 NIH_META     = DATA_RAW / 'Data_Entry_2017.csv'
 
 SEED          = 42
-CAP_PER_CLASS = 1431   # pneumonia class size — cap all classes here
-MIN_PER_CLASS = 1431   # drop any class below this
+CAP_PER_CLASS = 1431   # cap each class at this many samples
+DROP_CLASSES  = ['Hernia']   # always dropped; classes < CAP_PER_CLASS are added dynamically below
+drop_classes  = set(DROP_CLASSES)  # filled in Section C with any extra classes
 TRAIN_FRAC    = 0.70
 VAL_FRAC      = 0.15
 TEST_FRAC     = 0.15
-IMAGE_DIR     = DATA_RAW / 'images'
-
 # ═══════════════════════════════════════════════════════════════
 # SECTION A: LOAD NIH METADATA
 # ═══════════════════════════════════════════════════════════════
@@ -42,7 +41,7 @@ df_nih['image_path'] = df_nih['Image Index'].map(image_paths)
 
 missing = df_nih['image_path'].isna().sum()
 if missing > 0:
-    print(f"WARNING: {missing} images could not be found in data/raw!")
+    print(f"WARNING: {missing} images could not be found in data/archive!")
 
 print(f"Loaded {len(df_nih):,} rows from {NIH_META.name}")
 
@@ -74,22 +73,25 @@ df_nih['class_name'] = labels_and_classes.apply(lambda x: x[1])
 print(f"Label distribution:\n{df_nih['label'].value_counts().to_string()}")
 
 # ═══════════════════════════════════════════════════════════════
-# SECTION C: COUNT CLASSES AND FILTER
+# SECTION C: REMOVE DROP CLASSES
 # ═══════════════════════════════════════════════════════════════
-print("\n=== SECTION C: Class counts and filtering ===")
+print("\n=== SECTION C: Removing drop classes ===")
 
 class_counts = df_nih['class_name'].value_counts()
 print("Samples per class (full dataset):")
 for cls, cnt in class_counts.items():
     print(f"  {cls:<25} {cnt:>6,}")
 
-# Keep only classes meeting minimum threshold
-keep_classes   = class_counts[class_counts >= MIN_PER_CLASS].index.tolist()
-drop_classes   = class_counts[class_counts <  MIN_PER_CLASS].index.tolist()
+# Dynamically drop any class with fewer than CAP_PER_CLASS samples
+insufficient = [c for c in class_counts.index if class_counts[c] < CAP_PER_CLASS and c not in drop_classes]
+for cls in insufficient:
+    drop_classes.add(cls)
+    print(f"  {cls:<25} {class_counts[cls]:>6,}  <-- INSUFFICIENT SAMPLES, DROPPED")
 
-print(f"\nDropped classes (count < {MIN_PER_CLASS}):")
-for cls in drop_classes:
-    print(f"  {cls:<25} {class_counts[cls]:>6,}  <-- DROPPED")
+keep_classes = [c for c in class_counts.index if c not in drop_classes]
+print(f"\nFinal dropped classes:")
+for cls in sorted(drop_classes):
+    print(f"  {cls:<25} {class_counts[cls]:>6,}")
 
 df_filtered = df_nih[df_nih['class_name'].isin(keep_classes)].copy()
 print(f"\nAfter filtering: {len(df_filtered):,} rows, {len(keep_classes)} classes kept")
@@ -97,7 +99,7 @@ print(f"\nAfter filtering: {len(df_filtered):,} rows, {len(keep_classes)} classe
 # ═══════════════════════════════════════════════════════════════
 # SECTION D: CAP EACH CLASS AT CAP_PER_CLASS SAMPLES
 # ═══════════════════════════════════════════════════════════════
-print("\n=== SECTION D: Capping classes at {CAP_PER_CLASS} samples ===")
+print(f"\n=== SECTION D: Capping classes at {CAP_PER_CLASS} samples ===")
 
 rng = np.random.default_rng(SEED)
 capped_frames = []
@@ -110,19 +112,22 @@ for cls in keep_classes:
 
 df_capped = pd.concat(capped_frames, ignore_index=True)
 
-# After capping: Pneumonia=1, everything else=0
-df_capped['label'] = (df_capped['class_name'] == 'Pneumonia').astype(int)
+# Multi-class label encoding: sort alphabetically for deterministic mapping
+class_names = sorted(df_capped['class_name'].unique().tolist())
+class_to_label = {name: idx for idx, name in enumerate(class_names)}
+df_capped['label'] = df_capped['class_name'].map(class_to_label)
 
-print("Counts after capping:")
-for cls in keep_classes:
-    n   = (df_capped['class_name'] == cls).sum()
-    lbl = 1 if cls == 'Pneumonia' else 0
-    print(f"  {cls:<25} {n:>6,}  label={lbl}")
+print("\nClass-to-label mapping (alphabetical):")
+for name, label in class_to_label.items():
+    print(f"  label={label:<2}  {name}")
 
-n_pos = df_capped['label'].sum()
-n_neg = len(df_capped) - n_pos
-print(f"\nTotal capped: {len(df_capped):,}  |  Pos={n_pos:,}  |  Neg={n_neg:,}")
-print(f"Pos rate: {n_pos/len(df_capped)*100:.2f}%")
+print("\nCounts after capping:")
+for cls in sorted(keep_classes):
+    n = (df_capped['class_name'] == cls).sum()
+    lbl = class_to_label[cls]
+    print(f"  label={lbl:<2}  {cls:<25} {n:>6,}")
+
+print(f"\nTotal capped: {len(df_capped):,}  |  Classes: {len(class_names)}")
 
 # ═══════════════════════════════════════════════════════════════
 # SECTION E: PATIENT-WISE 70 / 15 / 15 SPLIT
@@ -208,39 +213,43 @@ print("\n=== SECTION H: Saving dataset_summary.json ===")
 
 DATA_META.mkdir(parents=True, exist_ok=True)
 
-def split_stats(df):
-    total = len(df)
-    pos   = int(df['label'].sum())
-    neg   = total - pos
-    rate  = round(pos / total, 4) if total > 0 else 0.0
-    return total, pos, neg, rate
+def split_per_class_counts(df, class_names):
+    counts = {}
+    for name in class_names:
+        counts[name] = int((df['class_name'] == name).sum())
+    return counts
 
-tr_total, tr_pos, tr_neg, tr_rate = split_stats(df_train)
-vl_total, vl_pos, vl_neg, vl_rate = split_stats(df_val)
-te_total, te_pos, te_neg, te_rate = split_stats(df_test)
-
+class_names_sorted = sorted(keep_classes)
 summary = {
-    "strategy":         "NIH-only, capped per class, patient-wise 70/15/15",
-    "cap_per_class":    CAP_PER_CLASS,
-    "classes_kept":     sorted(keep_classes),
-    "classes_dropped":  sorted(drop_classes),
-    "train_total":      tr_total,
-    "train_pos":        tr_pos,
-    "train_neg":        tr_neg,
-    "train_pos_rate":   tr_rate,
-    "val_total":        vl_total,
-    "val_pos":          vl_pos,
-    "val_neg":          vl_neg,
-    "val_pos_rate":     vl_rate,
-    "test_total":       te_total,
-    "test_pos":         te_pos,
-    "test_neg":         te_neg,
-    "test_pos_rate":    te_rate,
-    "seed":             SEED,
+    "strategy":          "NIH-only, capped per class, patient-wise 70/15/15",
+    "task":              "multi-class lung disease classification",
+    "cap_per_class":     CAP_PER_CLASS,
+    "classes_kept":      class_names_sorted,
+    "classes_dropped":   sorted(drop_classes),
+    "class_to_label":    {name: idx for idx, name in enumerate(class_names_sorted)},
+    "seed":              SEED,
+    "splits": {
+        "train": {
+            "total": int(len(df_train)),
+            "per_class": split_per_class_counts(df_train, class_names_sorted),
+        },
+        "val": {
+            "total": int(len(df_val)),
+            "per_class": split_per_class_counts(df_val, class_names_sorted),
+        },
+        "test": {
+            "total": int(len(df_test)),
+            "per_class": split_per_class_counts(df_test, class_names_sorted),
+        },
+    },
 }
 
 with open(DATA_META / 'dataset_summary.json', 'w') as f:
     json.dump(summary, f, indent=4)
+
+print("Class mapping:")
+for name, label in class_to_label.items():
+    print(f"  label={label:<2}  {name}")
 
 # ═══════════════════════════════════════════════════════════════
 # SECTION I: FINAL AUDIT PRINT
@@ -248,12 +257,16 @@ with open(DATA_META / 'dataset_summary.json', 'w') as f:
 print("\n================================================")
 print("FINAL SPLIT AUDIT")
 print("================================================")
-print(f"{'Split':<8} | {'Total':>6} | {'Pos':>5} | {'Neg':>5} | {'Pos Rate':>8}")
-print(f"{'-'*8}-+-{'-'*6}-+-{'-'*5}-+-{'-'*5}-+-{'-'*9}")
-print(f"{'Train':<8} | {tr_total:>6} | {tr_pos:>5} | {tr_neg:>5} | {tr_rate*100:>7.2f}%")
-print(f"{'Val':<8} | {vl_total:>6} | {vl_pos:>5} | {vl_neg:>5} | {vl_rate*100:>7.2f}%")
-print(f"{'Test':<8} | {te_total:>6} | {te_pos:>5} | {te_neg:>5} | {te_rate*100:>7.2f}%")
-print("================================================")
+print(f"Total samples: {len(df_capped):,} across {len(class_names)} classes")
+print(f"Classes kept: {len(class_names)} | Dropped: {sorted(drop_classes)}")
+print()
+for split_name, df_sp in [('Train', df_train), ('Val', df_val), ('Test', df_test)]:
+    print(f"  {split_name:<6}: {len(df_sp):>6} samples")
+    for name in class_names_sorted:
+        cnt = int((df_sp['class_name'] == name).sum())
+        pct = cnt / len(df_sp) * 100 if len(df_sp) > 0 else 0
+        print(f"         {name:<25} {cnt:>6,}  ({pct:>5.2f}%)")
+    print()
 print("Patient leakage: ZERO (verified)")
 print(f"Saved: data/splits/train.csv")
 print(f"Saved: data/splits/val.csv")

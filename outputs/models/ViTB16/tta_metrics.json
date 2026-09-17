@@ -1,0 +1,18 @@
+{
+  "model": "ViT-B/16",
+  "evaluation": "TTA_5variants",
+  "best_epoch": 13,
+  "tta_roc_auc": 0.6246,
+  "tta_pr_auc": 0.1054,
+  "tta_f1": 0.1845,
+  "tta_threshold": 0.48,
+  "tta_precision": 0.1153,
+  "tta_recall": 0.4624,
+  "tta_tp": 86,
+  "tta_fp": 660,
+  "tta_tn": 1765,
+  "tta_fn": 100,
+  "single_roc_auc": 0.618,
+  "single_pr_auc": 0.105,
+  "single_f1": 0.1885
+}

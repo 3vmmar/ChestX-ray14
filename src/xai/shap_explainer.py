@@ -34,7 +34,7 @@ IMAGENET_STD = np.array([0.229, 0.224, 0.225])
 
 class SHAPExplainer:
     """
-    SHAP PartitionExplainer for chest X-ray binary classification.
+    SHAP PartitionExplainer for multi-class chest X-ray classification.
 
     Uses shap.maskers.Image for hierarchical superpixel partitioning
     and a model-agnostic predict wrapper.
@@ -47,19 +47,19 @@ class SHAPExplainer:
     max_evals : int
         Maximum number of model evaluations per explanation.
         Higher = more accurate but slower. 200-500 is practical.
+    num_classes : int
+        Number of output classes (default 14).
     """
 
-    def __init__(self, model, device, max_evals=300):
+    def __init__(self, model, device, max_evals=300, num_classes=14):
         self.model = model
         self.model.eval()
         self.device = device
         self.max_evals = max_evals
+        self.num_classes = num_classes
 
-        # Image masker: replaces masked regions with blurred version
-        # Input shape for masker: (224, 224, 3)
         self._masker = shap.maskers.Image("blur(64,64)", (224, 224, 3))
 
-        # Build the explainer with our predict wrapper
         self._explainer = shap.PartitionExplainer(
             self._predict_fn, self._masker
         )
@@ -76,7 +76,7 @@ class SHAPExplainer:
         Returns
         -------
         probs : np.ndarray
-            Shape (N, 2) with [P(neg), P(pos)] per image.
+            Shape (N, num_classes) with probabilities per class.
         """
         batch = []
         for img in images_np:
@@ -87,13 +87,12 @@ class SHAPExplainer:
         batch_tensor = torch.stack(batch).to(self.device)
 
         with torch.no_grad():
-            logits = self.model(batch_tensor).squeeze(-1)
-            pos_probs = torch.sigmoid(logits).cpu().numpy()
+            logits = self.model(batch_tensor)
+            probs = torch.softmax(logits, dim=1).cpu().numpy()
 
-        neg_probs = 1.0 - pos_probs
-        return np.column_stack([neg_probs, pos_probs])
+        return probs
 
-    def explain(self, image_np):
+    def explain(self, image_np, class_idx=None):
         """
         Compute SHAP values for a single image.
 
@@ -101,13 +100,14 @@ class SHAPExplainer:
         ----------
         image_np : np.ndarray
             Image (H, W, 3) in [0, 1] float, RGB, resized to 224x224.
+        class_idx : int or None
+            Class index to explain. None uses predicted class.
 
         Returns
         -------
         shap_values : np.ndarray
-            SHAP values array (H, W, C) for the positive (pneumonia) class.
+            SHAP values array (H, W, C) for the specified class.
         """
-        # PartitionExplainer expects (N, H, W, C)
         input_batch = image_np[np.newaxis, ...]
 
         explanation = self._explainer(
@@ -115,13 +115,21 @@ class SHAPExplainer:
             max_evals=self.max_evals,
         )
 
-        # explanation.values shape: (1, H, W, C, num_classes)
-        # We want class 1 (pneumonia)
         sv = explanation.values[0]  # (H, W, C, num_classes)
+
+        if class_idx is None:
+            # Predict class
+            with torch.no_grad():
+                input_tensor = torch.from_numpy(
+                    ((image_np - IMAGENET_MEAN) / IMAGENET_STD).transpose(2, 0, 1)
+                ).float().unsqueeze(0).to(self.device)
+                logits = self.model(input_tensor)
+                class_idx = int(logits.argmax(dim=1).item())
+
         if sv.ndim == 4:
-            sv = sv[:, :, :, 1]  # positive class -> (H, W, C)
+            sv = sv[:, :, :, class_idx]
         elif sv.ndim == 3:
-            pass  # already (H, W, C)
+            pass
 
         return sv
 

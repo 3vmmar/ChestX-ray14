@@ -18,12 +18,12 @@ from pathlib import Path
 
 class IGExplainer:
     """
-    Integrated Gradients explainer for binary classification.
+    Integrated Gradients explainer for multi-class classification.
 
     Parameters
     ----------
     model : torch.nn.Module
-        Trained model in eval mode. Must output raw logits (single neuron).
+        Trained model in eval mode. Must output raw logits.
     device : torch.device
     n_steps : int
         Number of interpolation steps (default 50).
@@ -36,7 +36,7 @@ class IGExplainer:
         self.n_steps = n_steps
         self._ig = CaptumIG(model)
 
-    def explain(self, input_tensor, baseline=None):
+    def explain(self, input_tensor, baseline=None, target=None):
         """
         Compute Integrated Gradients attribution.
 
@@ -46,6 +46,8 @@ class IGExplainer:
             Input image (1, C, H, W).
         baseline : torch.Tensor or None
             Baseline image (1, C, H, W). None uses a zero (black) image.
+        target : int or None
+            Target class index. None uses predicted class.
 
         Returns
         -------
@@ -60,12 +62,16 @@ class IGExplainer:
         else:
             baseline = baseline.to(self.device)
 
-        # target=0 for single-output binary model (the only logit)
+        if target is None:
+            with torch.no_grad():
+                logits = self.model(input_tensor)
+                target = int(logits.argmax(dim=1).item())
+
         attr = self._ig.attribute(
             input_tensor,
             baselines=baseline,
             n_steps=self.n_steps,
-            target=0,
+            target=target,
         )
 
         # (1, C, H, W) -> (H, W, C)
